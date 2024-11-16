@@ -359,11 +359,6 @@ app.post("/askBot", async (req, res) => {
 // ██║      ██║  ██║ ╚██████╔╝    ██║    ███████╗ ╚██████╗    ██║    ███████╗ ██████╔╝
 // ╚═╝      ╚═╝  ╚═╝  ╚═════╝     ╚═╝    ╚══════╝  ╚═════╝    ╚═╝    ╚══════╝ ╚═════╝
 
-app.get("/admin", checkAdmin, (req, res) => {
-  console.log("current session level:", req.session.userLevel);
-  res.sendFile(path.join(__dirname, "views", "admin.html"));
-});
-
 app.get("/getAllUsersStats", checkAdmin, async (req, res) => {
   try {
     const response = await axios.get(
@@ -410,12 +405,27 @@ app.get("/getUserStats", async (req, res) => {
   }
 });
 
-// ██╗       ██████╗   ██████╗   ██████╗  ██╗   ██╗ ████████╗
-// ██║      ██╔═══██╗ ██╔════╝  ██╔═══██╗ ██║   ██║ ╚══██╔══╝
-// ██║      ██║   ██║ ██║  ███╗ ██║   ██║ ██║   ██║    ██║
-// ██║      ██║   ██║ ██║   ██║ ██║   ██║ ██║   ██║    ██║
-// ███████╗ ╚██████╔╝ ╚██████╔╝ ╚██████╔╝ ╚██████╔╝    ██║
-// ╚══════╝  ╚═════╝   ╚═════╝   ╚═════╝   ╚═════╝     ╚═╝
+//  █████╗  ██████╗  ███╗   ███╗ ██╗ ███╗   ██╗
+// ██╔══██╗ ██╔══██╗ ████╗ ████║ ██║ ████╗  ██║
+// ███████║ ██║  ██║ ██╔████╔██║ ██║ ██╔██╗ ██║
+// ██╔══██║ ██║  ██║ ██║╚██╔╝██║ ██║ ██║╚██╗██║
+// ██║  ██║ ██████╔╝ ██║ ╚═╝ ██║ ██║ ██║ ╚████║
+// ╚═╝  ╚═╝ ╚═════╝  ╚═╝     ╚═╝ ╚═╝ ╚═╝  ╚═══╝
+app.get("/admin", checkAdmin, (req, res) => {
+  console.log("current session level:", req.session.userLevel);
+  const users = [];
+  // res.sendFile(path.join(__dirname, "views", "admin.html"));
+  res.render("admin", { users: users, userLevel: req.session.userLevel });
+});
+                                     
+
+
+//  ██╗       ██████╗   ██████╗   ██████╗  ██╗   ██╗ ████████╗
+//  ██║      ██╔═══██╗ ██╔════╝  ██╔═══██╗ ██║   ██║ ╚══██╔══╝
+//  ██║      ██║   ██║ ██║  ███╗ ██║   ██║ ██║   ██║    ██║
+//  ██║      ██║   ██║ ██║   ██║ ██║   ██║ ██║   ██║    ██║
+//  ███████╗ ╚██████╔╝ ╚██████╔╝ ╚██████╔╝ ╚██████╔╝    ██║
+//  ╚══════╝  ╚═════╝   ╚═════╝   ╚═════╝   ╚═════╝     ╚═╝
 
 app.post("/logout", (req, res) => {
   console.log("Logging out...");
@@ -427,12 +437,21 @@ app.post("/logout", (req, res) => {
   });
 });
 
-// 401 page
+
+
+//  ██╗  ██╗   ██████╗    ██╗
+//  ██║  ██║  ██╔═████╗  ███║
+//  ███████║  ██║██╔██║  ╚██║
+//  ╚════██║  ████╔╝██║   ██║
+//       ██║  ╚██████╔╝   ██║
+//       ╚═╝   ╚═════╝    ╚═╝
+
 app.get("/401", (req, res) => {
   res.sendFile(path.join(__dirname, "views", "401.html"));
 });
 
-// // Start the server
+
+// Start the server
 app.listen(port, () => {
   console.log(`Server running at http://localhost:${port}`);
 });
