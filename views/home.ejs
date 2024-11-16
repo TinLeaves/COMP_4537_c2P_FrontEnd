@@ -16,8 +16,12 @@
       </header>
       <main class="add-margin-bottom-20">
         <ul>
+          <% if (userLevel === 'admin') { %>
+            <li><a href="/admin">Admin Dashboard (<code>/admin</code>)</a></li>
+          <% } %>
+
           <li><a href="/user">View your API usage (<code>/user</code>)</a></li>
-          <li><a href="/ai">Use our powerful AI</a></li>
+          <li><a href="/ai">Use our powerful AI (<code>/ai</code>)</a></li>
         </ul>
       </main>
       <form action="/logout" method="POST">

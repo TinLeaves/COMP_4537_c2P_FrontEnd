@@ -13,6 +13,8 @@ const cookieParser = require("cookie-parser");
 
 app.use("/views", express.static(path.join(__dirname, "views")));
 app.use("/js", express.static(path.join(__dirname, "js")));
+app.set("views", __dirname + "/views");
+app.set("view engine", "ejs");
 app.use(express.static(path.join(__dirname, "public")));
 app.use(express.static(__dirname + "/public"));
 app.use(express.json());
@@ -78,10 +80,10 @@ function checkAdmin(req, res, next) {
 
 app.get("/home", (req, res) => {
   if (!req.session.authToken || !req.session.userLevel) {
-    return res.redirect("/login"); // If no valid session, redirect to login
+    return res.redirect("/login"); 
   }
-  console.log("current session level:", req.session.userLevel);
-  // res.sendFile(path.join(__dirname, "views", "home.html"));
+  console.log("/home: current session level:", req.session.userLevel);
+
   res.render("home", { userEmail: req.session.email, userLevel: req.session.userLevel });
 });
 
@@ -122,6 +124,16 @@ app.get("/login", (req, res) => {
   res.sendFile(path.join(__dirname, "views", "login.html"));
 });
 
+/**
+ * 
+ * 
+ * Server response object:
+ *  "success": boolean
+    "message": string
+    "userId": integer
+    "jwtToken": string
+    "identifier": string
+ */
 app.post("/login", async (req, res) => {
   const { email, password } = req.body;
   console.log("email:", email);
@@ -362,6 +374,60 @@ app.post("/askBot", async (req, res) => {
   }
 });
 
+
+
+//  █████╗  ██████╗  ███╗   ███╗ ██╗ ███╗   ██╗
+// ██╔══██╗ ██╔══██╗ ████╗ ████║ ██║ ████╗  ██║
+// ███████║ ██║  ██║ ██╔████╔██║ ██║ ██╔██╗ ██║
+// ██╔══██║ ██║  ██║ ██║╚██╔╝██║ ██║ ██║╚██╗██║
+// ██║  ██║ ██████╔╝ ██║ ╚═╝ ██║ ██║ ██║ ╚████║
+// ╚═╝  ╚═╝ ╚═════╝  ╚═╝     ╚═╝ ╚═╝ ╚═╝  ╚═══╝
+app.get("/admin", checkAdmin, async (req, res) => {
+  console.log("/admin: current session level:", req.session.userLevel);
+  const apiCallToGetStatsAllUsers = await callGetAllUsersStats(req);
+
+  const users = apiCallToGetStatsAllUsers.userStats;
+
+  res.render("admin", { users: users, userLevel: req.session.userLevel });
+});
+
+/**
+ * Helper: calls the server API to get all users' stats. Only admin-level users can access this endpoint.
+ * 
+ * @param {*} req 
+ * @returns response object: 
+ * {
+ *   "userStats": [
+ *     {
+ *       "user_id": integer,
+ *       "user__email": string,
+ *       "token_count": integer,
+ *       "request_count": integer,
+ *     }, ...
+ *   ]
+ * }
+ */
+async function callGetAllUsersStats(req) {
+  try {
+    const response = await axios.get(
+      "https://comp4537-c2p-api-server-1.onrender.com/api/v1/user/userStats/",
+      {
+        headers: {
+          Authorization: `Bearer ${req.session.authToken}`,
+        },
+      }
+    );
+    // console.log("callGetAllUsersStats(): response data:", response.data);
+    return response.data;
+    
+  } catch (error) {
+    console.error("callGetAllUsersStats(): Error during fetch:", error);
+    return { error: error };
+  }
+}
+
+
+
 // ██████╗  ██████╗   ██████╗  ████████╗ ███████╗  ██████╗ ████████╗ ███████╗ ██████╗
 // ██╔══██╗ ██╔══██╗ ██╔═══██╗ ╚══██╔══╝ ██╔════╝ ██╔════╝ ╚══██╔══╝ ██╔════╝ ██╔══██╗
 // ██████╔╝ ██████╔╝ ██║   ██║    ██║    █████╗   ██║         ██║    █████╗   ██║  ██║
@@ -369,10 +435,18 @@ app.post("/askBot", async (req, res) => {
 // ██║      ██║  ██║ ╚██████╔╝    ██║    ███████╗ ╚██████╗    ██║    ███████╗ ██████╔╝
 // ╚═╝      ╚═╝  ╚═╝  ╚═════╝     ╚═╝    ╚══════╝  ╚═════╝    ╚═╝    ╚══════╝ ╚═════╝
 
-app.get("/user", (req, res) => {
+app.get("/user", async (req, res) => {
+  console.log("/user: current session level:", req.session.userLevel);
   // res.sendFile(path.join(__dirname, "views", "user.html"));
-  const users = [];
-  res.render("user", { user: users });
+  const results = await callGetUserStats(req.session.userId, req);
+  const user = {
+    userId: results.user_id,
+    email: results.user__email,
+    apiCallsRemaining: results.token_count,
+    apiCallsUsed: results.request_count
+};
+
+  res.render("user", { user: user });
 });
 
 
@@ -386,9 +460,12 @@ app.get("/getAllUsersStats", checkAdmin, async (req, res) => {
         },
       }
     );
-    const data = response.data;
+    const results = response.data;
+    const users = results.userStats
+    console.log("/getAllUsersStats: users object:", users);
 
     res.send(data);
+
   } catch (error) {
     console.error("Error during fetch:", error);
     return res
@@ -397,7 +474,17 @@ app.get("/getAllUsersStats", checkAdmin, async (req, res) => {
   }
 });
 
-
+/**
+ * 
+ * Server response object:
+ * {
+ *   "user_id": integer,
+ *   "user__email": string,
+ *   "token_count": integer,
+ *   "request_count": integer,
+ * }
+ * 
+ */
 app.get("/getUserStats", async (req, res) => {
   try {
     const response = await axios.get(
@@ -419,18 +506,40 @@ app.get("/getUserStats", async (req, res) => {
   }
 });
 
-//  █████╗  ██████╗  ███╗   ███╗ ██╗ ███╗   ██╗
-// ██╔══██╗ ██╔══██╗ ████╗ ████║ ██║ ████╗  ██║
-// ███████║ ██║  ██║ ██╔████╔██║ ██║ ██╔██╗ ██║
-// ██╔══██║ ██║  ██║ ██║╚██╔╝██║ ██║ ██║╚██╗██║
-// ██║  ██║ ██████╔╝ ██║ ╚═╝ ██║ ██║ ██║ ╚████║
-// ╚═╝  ╚═╝ ╚═════╝  ╚═╝     ╚═╝ ╚═╝ ╚═╝  ╚═══╝
-app.get("/admin", checkAdmin, (req, res) => {
-  console.log("current session level:", req.session.userLevel);
-  const users = [];
-  // res.sendFile(path.join(__dirname, "views", "admin.html"));
-  res.render("admin", { users: users, userLevel: req.session.userLevel });
-});
+
+/**
+ * Helper: calls the server API to get the specified user's stats.
+ * 
+ * The server will only return the stats of the user making the request, except for admin-level users which can get the stats of any user.
+ * 
+ * @param {integer} userId 
+ * @param {*} req an Express request object
+ * @returns response object:
+ * {
+ *   "user_id": integer,
+ *   "user__email": string,
+ *   "token_count": integer,
+ *   "request_count": integer,
+ * }
+ */
+async function callGetUserStats(userId, req) {
+  try {
+    const response = await axios.get(
+      `https://comp4537-c2p-api-server-1.onrender.com/api/v1/user/stats/${userId}/`,
+      {
+        headers: {
+          Authorization: `Bearer ${req.session.authToken}`,
+        },
+      }
+    );
+    console.log("callGetUserStats(): response data:", response.data);
+    return response.data;
+
+  } catch (error) {
+    console.error("callGetUserStats(): Error during fetch:", error);
+    return { error: error };
+  }
+}
                                      
 
 

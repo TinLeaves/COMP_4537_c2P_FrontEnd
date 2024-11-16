@@ -16,6 +16,7 @@
     </header>
     <main class="add-margin-bottom-20">
       <div class="container add-margin-bottom-20">
+        <h2>User API Calls Consumption</h2>
         <div id="adminInfo">
           <table id="userTable">
             <thead>
@@ -29,9 +30,9 @@
               <% if (users && users.length > 0) { %>
                 <% users.forEach(function(user) { %>
                   <tr>
-                    <td><%= user.email %></td>
-                    <td><%= user.apiCallsUsed %></td>
-                    <td><%= user.apiCallsRemaining %></td>
+                    <td><%= user.user__email %></td>
+                    <td><%= user.request_count %></td>
+                    <td><%= user.token_count %></td>
                   </tr>
                 <% }) %>
               <% } else { %>
@@ -46,6 +47,9 @@
     </main>
     <hr />
     <div style="margin-top: 1em">
+        <button onclick="goHome()">Home</button>
+        <br />
+        <br />
       <form action="/logout" method="POST">
         <button type="submit">Logout</button>
       </form>
