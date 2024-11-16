@@ -67,6 +67,8 @@ function checkAdmin(req, res, next) {
   }
 }
 
+
+
 // ██╗  ██╗  ██████╗  ███╗   ███╗ ███████╗         ██╗
 // ██║  ██║ ██╔═══██╗ ████╗ ████║ ██╔════╝        ██╔╝
 // ███████║ ██║   ██║ ██╔████╔██║ █████╗         ██╔╝
@@ -79,7 +81,8 @@ app.get("/home", (req, res) => {
     return res.redirect("/login"); // If no valid session, redirect to login
   }
   console.log("current session level:", req.session.userLevel);
-  res.sendFile(path.join(__dirname, "views", "home.html"));
+  // res.sendFile(path.join(__dirname, "views", "home.html"));
+  res.render("home", { userEmail: req.session.email, userLevel: req.session.userLevel });
 });
 
 app.get("/", (req, res) => {
@@ -88,6 +91,8 @@ app.get("/", (req, res) => {
   }
   res.redirect("/login");
 });
+
+
 
 //   ██████╗  ███████╗  ██████╗  ██╗ ███████╗ ████████╗ ███████╗ ██████╗
 //   ██╔══██╗ ██╔════╝ ██╔════╝  ██║ ██╔════╝ ╚══██╔══╝ ██╔════╝ ██╔══██╗
@@ -103,6 +108,8 @@ app.get("/register", (req, res) => {
 app.post("/register", async (req, res) => {
   // TODO
 });
+
+
 
 // ██╗       ██████╗   ██████╗  ██╗ ███╗   ██╗
 // ██║      ██╔═══██╗ ██╔════╝  ██║ ████╗  ██║
@@ -146,6 +153,7 @@ app.post("/login", async (req, res) => {
       console.log("Login successful:", message);
       req.session.authToken = jwtToken;
       req.session.userId = userId;
+      req.session.email = email;
       setAuthLevel(identifier, req);
       console.log("current session level:", req.session.userLevel);
       console.log("Redirecting...");
@@ -166,6 +174,8 @@ app.post("/login", async (req, res) => {
       .send({ error: "Something went wrong. Please try again." });
   }
 });
+
+
 
 //  █████╗  ██╗     ███████╗ ███╗   ██╗ ██████╗  ██████╗   ██████╗  ██╗ ███╗   ██╗ ████████╗ ███████╗
 // ██╔══██╗ ██║     ██╔════╝ ████╗  ██║ ██╔══██╗ ██╔══██╗ ██╔═══██╗ ██║ ████╗  ██║ ╚══██╔══╝ ██╔════╝
