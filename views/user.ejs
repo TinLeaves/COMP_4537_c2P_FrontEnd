@@ -14,10 +14,12 @@
       </header>
       <div class="container">
         <div id="userInfo">
-          <p>Email: <span id="userEmail"></span></p>
-          <p>API Calls Used: <span id="apiCallsUsed"></span></p>
-          <p>API Calls Remaining: <span id="apiCallsRemaining"></span></p>
-          <div id="warningMessage" style="color: red"></div>
+          <p>Email: <span><%= user.email %></span></p>
+          <p>API Calls Used: <span><%= user.apiCallsUsed %></span></p>
+          <p>API Calls Remaining: <span><%= user.apiCallsRemaining %></span></p>
+          <% if (user.apiCallsRemaining < 10) { %>
+            <div id="warningMessage" style="color: red">Warning: Low API calls remaining!</div>
+          <% } %>
         </div>
       </div>
     </main>

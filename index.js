@@ -369,6 +369,13 @@ app.post("/askBot", async (req, res) => {
 // ██║      ██║  ██║ ╚██████╔╝    ██║    ███████╗ ╚██████╗    ██║    ███████╗ ██████╔╝
 // ╚═╝      ╚═╝  ╚═╝  ╚═════╝     ╚═╝    ╚══════╝  ╚═════╝    ╚═╝    ╚══════╝ ╚═════╝
 
+app.get("/user", (req, res) => {
+  // res.sendFile(path.join(__dirname, "views", "user.html"));
+  const users = [];
+  res.render("user", { user: users });
+});
+
+
 app.get("/getAllUsersStats", checkAdmin, async (req, res) => {
   try {
     const response = await axios.get(
@@ -390,9 +397,6 @@ app.get("/getAllUsersStats", checkAdmin, async (req, res) => {
   }
 });
 
-app.get("/user", (req, res) => {
-  res.sendFile(path.join(__dirname, "views", "user.html"));
-});
 
 app.get("/getUserStats", async (req, res) => {
   try {
