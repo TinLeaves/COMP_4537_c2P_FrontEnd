@@ -104,14 +104,75 @@ app.get("/", (req, res) => {
 //   ╚═╝  ╚═╝ ╚══════╝  ╚═════╝  ╚═╝ ╚══════╝    ╚═╝    ╚══════╝ ╚═╝  ╚═╝
 
 app.get("/register", (req, res) => {
-  res.sendFile(path.join(__dirname, "views", "register.html"));
+  res.render("register", { errorMessage: null }); // Render 'register.ejs' with no error by default
 });
 
 app.post("/register", async (req, res) => {
-  // TODO
+  const { email, password } = req.body;
+  console.log("email:", email);
+  console.log("password:", password);
+
+  if (!email || !password) {
+    return res.render("register", { errorMessage: "Both fields are required." });
+  }
+
+  try {
+    // Registration request
+    const registerResponse = await axios.post(
+      "https://comp4537-c2p-api-server-1.onrender.com/api/v1/user/register/",
+      { email, password }, // Send the data as JSON
+      {
+        headers: {
+          "Content-Type": "application/x-www-form-urlencoded", // Changed to JSON for better compatibility with API
+        },
+      }
+    );
+
+    const { success, message, userId, jwtToken, identifier } = registerResponse.data;
+
+    if (success) {
+      console.log("Registration successful:", message);
+
+      // Automatically log in after successful registration
+      const loginResponse = await axios.post(
+        "https://comp4537-c2p-api-server-1.onrender.com/api/v1/user/login/",
+        { email, password },
+        {
+          headers: {
+            "Content-Type": "application/x-www-form-urlencoded",
+          },
+        }
+      );
+
+      const { success: loginSuccess, message: loginMessage, jwtToken: loginToken, userId: loginUserId, identifier: loginIdentifier } = loginResponse.data;
+
+      if (loginSuccess) {
+        console.log("Login successful:", loginMessage);
+        req.session.authToken = loginToken;
+        req.session.userId = loginUserId;
+        req.session.email = email;
+        setAuthLevel(loginIdentifier, req);
+        console.log("current session level:", req.session.userLevel);
+
+        // Redirect based on user level
+        if (req.session.userLevel === "admin") {
+          return res.redirect("/admin");
+        } else if (req.session.userLevel === "user") {
+          return res.redirect("/home");
+        } else {
+          return res.status(401).send({ error: "Invalid user level." });
+        }
+      } else {
+        return res.render("register", { errorMessage: "Login after registration failed." });
+      }
+    } else {
+      return res.render("register", { errorMessage: registerResponse.data.error || "Registration failed." });
+    }
+  } catch (error) {
+    console.error("Error during registration:", error.response?.data?.error || error.message);
+    return res.render("register", { errorMessage: error.response?.data?.error || "An error occurred. Please try again." });
+  }
 });
-
-
 
 // ██╗       ██████╗   ██████╗  ██╗ ███╗   ██╗
 // ██║      ██╔═══██╗ ██╔════╝  ██║ ████╗  ██║
@@ -394,6 +455,7 @@ app.get("/admin", checkAdmin, async (req, res) => {
  * 
  * @param {*} req 
  * @returns response object: 
+ * ```
  * {
  *   "userStats": [
  *     {
@@ -404,6 +466,7 @@ app.get("/admin", checkAdmin, async (req, res) => {
  *     }, ...
  *   ]
  * }
+ * ```
  */
 async function callGetAllUsersStats(req) {
   try {
@@ -433,6 +496,9 @@ async function callGetAllUsersStats(req) {
 // ██║      ██║  ██║ ╚██████╔╝    ██║    ███████╗ ╚██████╗    ██║    ███████╗ ██████╔╝
 // ╚═╝      ╚═╝  ╚═╝  ╚═════╝     ╚═╝    ╚══════╝  ╚═════╝    ╚═╝    ╚══════╝ ╚═════╝
 
+/**
+ * API endpoint to get user stats and render the user page.
+ */
 app.get("/user", async (req, res) => {
   console.log("/user: current session level:", req.session.userLevel);
   // res.sendFile(path.join(__dirname, "views", "user.html"));
@@ -448,6 +514,9 @@ app.get("/user", async (req, res) => {
 });
 
 
+/**
+ * API call to get all users' stats. Only admin-level users can access this endpoint.
+ */
 app.get("/getAllUsersStats", checkAdmin, async (req, res) => {
   try {
     const response = await axios.get(
@@ -472,17 +541,7 @@ app.get("/getAllUsersStats", checkAdmin, async (req, res) => {
   }
 });
 
-/**
- * 
- * Server response object:
- * {
- *   "user_id": integer,
- *   "user__email": string,
- *   "token_count": integer,
- *   "request_count": integer,
- * }
- * 
- */
+// API call to get user stats
 app.get("/getUserStats", async (req, res) => {
   try {
     const response = await axios.get(
@@ -513,12 +572,14 @@ app.get("/getUserStats", async (req, res) => {
  * @param {integer} userId 
  * @param {*} req an Express request object
  * @returns response object:
+ * ```
  * {
  *   "user_id": integer,
  *   "user__email": string,
  *   "token_count": integer,
  *   "request_count": integer,
  * }
+ * ```
  */
 async function callGetUserStats(userId, req) {
   try {
