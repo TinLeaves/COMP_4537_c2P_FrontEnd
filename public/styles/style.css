@@ -1,3 +1,8 @@
+
+.add-margin-bottom-5 {
+    margin-bottom: 5px;
+  }
+
 .add-margin-bottom-10 {
   margin-bottom: 10px;
 }
@@ -6,6 +11,18 @@
 .add-margin-bottom-20 {
     margin-bottom: 20px;
   }
+
+.error {
+    color: #d9534f; 
+    background-color: #f8d7da; 
+    border: 1px solid #f5c6cb;
+    padding: 10px; 
+    border-radius: 5px; 
+    margin-bottom: 15px; 
+    font-weight: bold; 
+    text-align: center; 
+    max-width: 250px;
+}
 
 .remove-margin-bottom {
     margin-bottom: 0px;

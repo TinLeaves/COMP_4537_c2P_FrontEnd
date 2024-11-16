@@ -121,7 +121,7 @@ app.post("/register", async (req, res) => {
 // ╚══════╝  ╚═════╝   ╚═════╝  ╚═╝ ╚═╝  ╚═══╝
 
 app.get("/login", (req, res) => {
-  res.sendFile(path.join(__dirname, "views", "login.html"));
+  res.render("login", { errorMessage: null }); // Render 'login.ejs' with no error by default
 });
 
 /**
@@ -177,13 +177,11 @@ app.post("/login", async (req, res) => {
         return res.status(401).send({ error: "Invalid user level." });
       }
     } else {
-      return res.status(401).send({ error: "Invalid email or password." });
+      res.render("login", { errorMessage: "Invalid email or password." });
     }
   } catch (error) {
-    console.error("Error during login:", error);
-    return res
-      .status(500)
-      .send({ error: "Something went wrong. Please try again." });
+    console.error("Error during login:", error.response.data.error, "\n Status code:", error.response.status);
+    res.render("login", { errorMessage: error.response.data.error });
   }
 });
 
