@@ -1,26 +1,32 @@
 require("dotenv").config();
 const express = require("express");
 const session = require("express-session");
-
+const MongoStore = require("connect-mongo");
 const app = express();
 const port = 3000;
-const node_session_secret = process.env.NODE_SESSION_SECRET;
 const path = require("path");
 const jwt = require("jsonwebtoken");
 const axios = require("axios");
-
 const cookieParser = require("cookie-parser");
-
-app.use("/views", express.static(path.join(__dirname, "views")));
-app.use("/js", express.static(path.join(__dirname, "js")));
-app.set("views", __dirname + "/views");
+const cors = require("cors");
+// app.use("/views", express.static(path.join(__dirname, "views")));
+// app.use("/js", express.static(path.join(__dirname, "js")));
+app.use(express.static(path.join(__dirname, "/public")));
+app.set("views", path.join(__dirname, "/public/views"));
 app.set("view engine", "ejs");
-app.use(express.static(path.join(__dirname, "public")));
-app.use(express.static(__dirname + "/public"));
+// app.use(express.static(path.join(__dirname, "public")));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 const bcrypt = require("bcrypt");
+
+app.use(
+  cors({
+    origin: [process.env.SITE_URL, "http://localhost:3000"],
+    methods: ["GET", "POST", "PATCH", "DELETE"],
+    allowedHeaders: ["Content-Type", "Authorization"],
+  })
+);
 
 // ███████╗ ███████╗ ███████╗ ███████╗ ██╗  ██████╗  ███╗   ██╗ ███████╗
 // ██╔════╝ ██╔════╝ ██╔════╝ ██╔════╝ ██║ ██╔═══██╗ ████╗  ██║ ██╔════╝
@@ -28,13 +34,25 @@ const bcrypt = require("bcrypt");
 // ╚════██║ ██╔══╝   ╚════██║ ╚════██║ ██║ ██║   ██║ ██║╚██╗██║ ╚════██║
 // ███████║ ███████╗ ███████║ ███████║ ██║ ╚██████╔╝ ██║ ╚████║ ███████║
 
+const isProduction = process.env.NODE_ENV === "production";
+const mongodb_url = process.env.MONGODB_URL;
+const mongodb_session_secret = process.env.MONGODB_SESSION_SECRET;
+const node_session_secret = process.env.NODE_SESSION_SECRET;
+const mongoStore = MongoStore.create({
+  mongoUrl: mongodb_url,
+  crypto: {
+    secret: mongodb_session_secret,
+  },
+});
+
 app.use(
   session({
     secret: node_session_secret,
+    store: mongoStore,
     resave: true,
-    saveUninitialized: true,
+    saveUninitialized: false,
     cookie: {
-      secure: false, // @TODO: set to true if using https
+      secure: isProduction,
       maxAge: 60 * 60 * 1000,
     },
   })
@@ -69,7 +87,20 @@ function checkAdmin(req, res, next) {
   }
 }
 
-
+/**
+ * Middleware: checks if user logged in
+ *
+ * @param {*} req
+ * @param {*} res
+ * @param {*} next
+ */
+const checkLoggedIn = (req, res, next) => {
+  if (req.session.authenticated) {
+    return next();
+  } else {
+    return res.redirect("/401");
+  }
+};
 
 // ██╗  ██╗  ██████╗  ███╗   ███╗ ███████╗         ██╗
 // ██║  ██║ ██╔═══██╗ ████╗ ████║ ██╔════╝        ██╔╝
@@ -80,11 +111,14 @@ function checkAdmin(req, res, next) {
 
 app.get("/home", (req, res) => {
   if (!req.session.authToken || !req.session.userLevel) {
-    return res.redirect("/login"); 
+    return res.redirect("/login");
   }
   console.log("/home: current session level:", req.session.userLevel);
 
-  res.render("home", { userEmail: req.session.email, userLevel: req.session.userLevel });
+  res.render("home", {
+    userEmail: req.session.email,
+    userLevel: req.session.userLevel,
+  });
 });
 
 app.get("/", (req, res) => {
@@ -93,8 +127,6 @@ app.get("/", (req, res) => {
   }
   res.redirect("/login");
 });
-
-
 
 //   ██████╗  ███████╗  ██████╗  ██╗ ███████╗ ████████╗ ███████╗ ██████╗
 //   ██╔══██╗ ██╔════╝ ██╔════╝  ██║ ██╔════╝ ╚══██╔══╝ ██╔════╝ ██╔══██╗
@@ -113,7 +145,9 @@ app.post("/register", async (req, res) => {
   console.log("password:", password);
 
   if (!email || !password) {
-    return res.render("register", { errorMessage: "Both fields are required." });
+    return res.render("register", {
+      errorMessage: "Both fields are required.",
+    });
   }
 
   try {
@@ -128,7 +162,8 @@ app.post("/register", async (req, res) => {
       }
     );
 
-    const { success, message, userId, jwtToken, identifier } = registerResponse.data;
+    const { success, message, userId, jwtToken, identifier } =
+      registerResponse.data;
 
     if (success) {
       console.log("Registration successful:", message);
@@ -144,7 +179,13 @@ app.post("/register", async (req, res) => {
         }
       );
 
-      const { success: loginSuccess, message: loginMessage, jwtToken: loginToken, userId: loginUserId, identifier: loginIdentifier } = loginResponse.data;
+      const {
+        success: loginSuccess,
+        message: loginMessage,
+        jwtToken: loginToken,
+        userId: loginUserId,
+        identifier: loginIdentifier,
+      } = loginResponse.data;
 
       if (loginSuccess) {
         console.log("Login successful:", loginMessage);
@@ -163,14 +204,24 @@ app.post("/register", async (req, res) => {
           return res.status(401).send({ error: "Invalid user level." });
         }
       } else {
-        return res.render("register", { errorMessage: "Login after registration failed." });
+        return res.render("register", {
+          errorMessage: "Login after registration failed.",
+        });
       }
     } else {
-      return res.render("register", { errorMessage: registerResponse.data.error || "Registration failed." });
+      return res.render("register", {
+        errorMessage: registerResponse.data.error || "Registration failed.",
+      });
     }
   } catch (error) {
-    console.error("Error during registration:", error.response?.data?.error || error.message);
-    return res.render("register", { errorMessage: error.response?.data?.error || "An error occurred. Please try again." });
+    console.error(
+      "Error during registration:",
+      error.response?.data?.error || error.message
+    );
+    return res.render("register", {
+      errorMessage:
+        error.response?.data?.error || "An error occurred. Please try again.",
+    });
   }
 });
 
@@ -227,6 +278,7 @@ app.post("/login", async (req, res) => {
       req.session.authToken = jwtToken;
       req.session.userId = userId;
       req.session.email = email;
+      req.session.authenticated = true;
       setAuthLevel(identifier, req);
       console.log("current session level:", req.session.userLevel);
       console.log("Redirecting...");
@@ -241,12 +293,15 @@ app.post("/login", async (req, res) => {
       res.render("login", { errorMessage: "Invalid email or password." });
     }
   } catch (error) {
-    console.error("Error during login:", error.response.data.error, "\n Status code:", error.response.status);
+    console.error(
+      "Error during login:",
+      error.response.data.error,
+      "\n Status code:",
+      error.response.status
+    );
     res.render("login", { errorMessage: error.response.data.error });
   }
 });
-
-
 
 //  █████╗  ██╗     ███████╗ ███╗   ██╗ ██████╗  ██████╗   ██████╗  ██╗ ███╗   ██╗ ████████╗ ███████╗
 // ██╔══██╗ ██║     ██╔════╝ ████╗  ██║ ██╔══██╗ ██╔══██╗ ██╔═══██╗ ██║ ████╗  ██║ ╚══██╔══╝ ██╔════╝
@@ -255,19 +310,33 @@ app.post("/login", async (req, res) => {
 // ██║  ██║ ██║     ███████╗ ██║ ╚████║ ██████╔╝ ██║      ╚██████╔╝ ██║ ██║ ╚████║    ██║    ███████║
 // ╚═╝  ╚═╝ ╚═╝     ╚══════╝ ╚═╝  ╚═══╝ ╚═════╝  ╚═╝       ╚═════╝  ╚═╝ ╚═╝  ╚═══╝    ╚═╝    ╚══════╝
 
-app.get("/ai", (req, res) => {
-  // res.sendFile(path.join(__dirname, "views", "ai.html"));
-  res.render("ai", { userLevel: req.session.userLevel });
+app.get("/ai", checkLoggedIn, async (req, res) => {
+  try {
+    const response = await axios.get(
+      `https://comp4537-c2p-api-server-1.onrender.com/api/v1/bot/page/`,
+      {
+        headers: {
+          Authorization: `Bearer ${req.session.authToken}`,
+        },
+      }
+    );
+    res.render("ai", { pageNames: response?.data?.pages });
+  } catch (error) {
+    console.error("Error during fetch:", error.response.data.error);
+    return res.render("401"); // change to 404
+    return;
+  }
 });
 
 app.post("/createPage", async (req, res) => {
-  const { pageName } = req.body;
+  const { pageName, description } = req.body;
 
   try {
     const response = await axios.post(
-      `https://comp4537-c2p-api-server-1.onrender.com/api/v1/bot/${req.session.userId}/page/`,
+      `https://comp4537-c2p-api-server-1.onrender.com/api/v1/bot/page/`,
       {
         name: pageName,
+        description: description,
       },
       {
         headers: {
@@ -277,7 +346,7 @@ app.post("/createPage", async (req, res) => {
       }
     );
 
-    return res.redirect("/ai");
+    return res.json(response.data);
   } catch (error) {
     console.error("Error during fetch:", error.response.data.error);
     return res.status(500).send({ error: error.response.data.error });
@@ -285,11 +354,11 @@ app.post("/createPage", async (req, res) => {
 });
 
 app.post("/createContext", async (req, res) => {
-  const { contextPageName, context } = req.body;
+  const { pageName, context } = req.body;
 
   try {
     const response = await axios.post(
-      `https://comp4537-c2p-api-server-1.onrender.com/api/v1/bot/${req.session.userId}/page/${contextPageName}/`,
+      `https://comp4537-c2p-api-server-1.onrender.com/api/v1/bot/page/${pageName}/`,
       {
         text: context,
       },
@@ -300,20 +369,20 @@ app.post("/createContext", async (req, res) => {
         },
       }
     );
-    return res.redirect("/ai");
+    return res.json(response.data);
   } catch (error) {
-    console.error("Error during fetch:", error.response.data.error);
-    return res.status(500).send({ error: error.response.data.error });
+    console.error("Error during fetch:", error);
+    return res.status(500).send({ error: error });
   }
 });
 
 app.post("/askBot", async (req, res) => {
-  const { questionPageName, question } = req.body;
+  const { pageName, question } = req.body;
   let answers = "";
 
   try {
     const response = await axios.post(
-      `https://comp4537-c2p-api-server-1.onrender.com/api/v1/bot/${req.session.userId}/ask/${questionPageName}/`,
+      `https://comp4537-c2p-api-server-1.onrender.com/api/v1/bot/page/${pageName}/ask/`,
       {
         question,
       },
@@ -324,117 +393,12 @@ app.post("/askBot", async (req, res) => {
         },
       }
     );
-
-    response.data.response.forEach((answer) => {
-      answers += `
-        <p>${answer}</p>
-        <br />
-      `;
-    });
-    console.log("answers:", answers);
-
-    const htmlPage = `
-    <!DOCTYPE html>
-    <html lang="en">
-      <head>
-        <meta charset="UTF-8" />
-        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-        <title>Document</title>
-        <link rel="stylesheet" href="/styles/style.css" />
-      </head>
-
-      <body>
-        <div id="home-content">
-          <h1>COMP4537 - C2P - AI-Powered Notebook</h1>
-          <p>Welcome to the AI page</p>
-          <main>
-            <h3>Create a Page</h3>
-            <form action="/createPage" method="POST">
-              <label for="pageName"
-                >Enter the page name for your context collection?</label
-              >
-              <br />
-              <input
-                type="text"
-                name="pageName"
-                placeholder="Enter the Page name"
-                required
-              />
-              <br />
-              <button type="submit">Create</button>
-            </form>
-
-            <h3>Upload context to a page</h3>
-            <form action="/createContext" method="POST">
-              <label for="contextPageName"
-                >Enter the page name for this context:</label
-              >
-              <br />
-              <input
-                type="text"
-                name="contextPageName"
-                placeholder="Enter the Page name"
-                required
-              />
-              <br />
-              <br />
-              <label for="context">Enter the context:</label>
-              <br />
-              <textarea
-                type="text"
-                name="context"
-                placeholder="Enter the context"
-                required
-              ></textarea>
-              <br />
-              <button type="submit">Upload</button>
-            </form>
-
-            <h3>Let's ask some question to our AI on your context</h3>
-            <form action="/askBot" method="POST">
-              <label for="questionPageName"
-                >Enter the page name for your context:</label
-              >
-              <br />
-              <input
-                type="text"
-                name="questionPageName"
-                placeholder="Enter the Page name"
-                required
-              />
-              <br />
-              <br />
-              <label for="question">Enter the question:</label>
-              <br />
-              <input
-                type="text"
-                name="question"
-                placeholder="Enter the question"
-                required
-              />
-              <br />
-              <button type="submit">Ask</button>
-            </form>
-            ${answers}
-          </main>
-          <br>
-          <form action="/logout" method="POST">
-            <button type="submit">Logout</button>
-          </form>
-        </div>
-
-        <script src="/js/utils.js"></script>
-      </body>
-    </html>
-    `;
-    return res.send(htmlPage);
+    return res.json(response.data);
   } catch (error) {
-    console.error("Error during fetch:", error.response.data.error);
-    return res.status(500).send({ error: error.response.data.error });
+    console.error("Error during fetch:", error?.response?.data?.error);
+    return res.status(500).send({ error: error?.response?.data?.error });
   }
 });
-
-
 
 //  █████╗  ██████╗  ███╗   ███╗ ██╗ ███╗   ██╗
 // ██╔══██╗ ██╔══██╗ ████╗ ████║ ██║ ████╗  ██║
@@ -453,9 +417,9 @@ app.get("/admin", checkAdmin, async (req, res) => {
 
 /**
  * Helper: calls the server API to get all users' stats. Only admin-level users can access this endpoint.
- * 
- * @param {*} req 
- * @returns response object: 
+ *
+ * @param {*} req
+ * @returns response object:
  * ```
  * {
  *   "userStats": [
@@ -481,14 +445,11 @@ async function callGetAllUsersStats(req) {
     );
     // console.log("callGetAllUsersStats(): response data:", response.data);
     return response.data;
-    
   } catch (error) {
     console.error("callGetAllUsersStats(): Error during fetch:", error);
     return { error: error };
   }
 }
-
-
 
 // ██████╗  ██████╗   ██████╗  ████████╗ ███████╗  ██████╗ ████████╗ ███████╗ ██████╗
 // ██╔══██╗ ██╔══██╗ ██╔═══██╗ ╚══██╔══╝ ██╔════╝ ██╔════╝ ╚══██╔══╝ ██╔════╝ ██╔══██╗
@@ -508,12 +469,11 @@ app.get("/user", async (req, res) => {
     userId: results.user_id,
     email: results.user__email,
     apiCallsRemaining: results.token_count,
-    apiCallsUsed: results.request_count
-};
+    apiCallsUsed: results.request_count,
+  };
 
   res.render("user", { user: user });
 });
-
 
 /**
  * API call to get all users' stats. Only admin-level users can access this endpoint.
@@ -529,12 +489,11 @@ app.get("/getAllUsersStats", checkAdmin, async (req, res) => {
       }
     );
     const results = response.data;
-    const users = results.userStats
+    const users = results.userStats;
     console.log("/getAllUsersStats: users object:", users);
 
     // res.send(data);
     res.send(users);
-
   } catch (error) {
     console.error("Error during fetch:", error);
     return res
@@ -565,13 +524,12 @@ app.get("/getUserStats", async (req, res) => {
   }
 });
 
-
 /**
  * Helper: calls the server API to get the specified user's stats.
- * 
+ *
  * The server will only return the stats of the user making the request, except for admin-level users which can get the stats of any user.
- * 
- * @param {integer} userId 
+ *
+ * @param {integer} userId
  * @param {*} req an Express request object
  * @returns response object:
  * ```
@@ -595,14 +553,11 @@ async function callGetUserStats(userId, req) {
     );
     console.log("callGetUserStats(): response data:", response.data);
     return response.data;
-
   } catch (error) {
     console.error("callGetUserStats(): Error during fetch:", error);
     return { error: error };
   }
 }
-                                     
-
 
 //  ██╗       ██████╗   ██████╗   ██████╗  ██╗   ██╗ ████████╗
 //  ██║      ██╔═══██╗ ██╔════╝  ██╔═══██╗ ██║   ██║ ╚══██╔══╝
@@ -620,8 +575,6 @@ app.post("/logout", (req, res) => {
     res.redirect("/login"); // Redirect to login page after successful logout
   });
 });
-
-
 
 //  ██╗  ██╗   ██████╗    ██╗
 //  ██║  ██║  ██╔═████╗  ███║

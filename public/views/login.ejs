@@ -1,0 +1,93 @@
+<%- include("templates/header") %>
+<div class="d-flex justify-content-center align-items-center flex-fill mt-5">
+  <!-- Left Section: Title and Image -->
+  <div class="text-center me-5">
+    <h1 class="display-4" style="font-weight: bold">AI-Powered Notebook</h1>
+    <img
+      src="/images/notebook.png"
+      alt="Notebook"
+      class="img-fluid mt-3"
+      style="max-width: 300px"
+    />
+    <p class="text-muted mt-2" style="font-size: 12px">
+      Image by
+      <a
+        href="https://www.flaticon.com/free-icon/notebook_732393?term=notebook&related_id=732393"
+        title="Notebook icons created by Freepik"
+        target="_blank"
+        rel="noopener noreferrer"
+      >
+        Freepik - Flaticon
+      </a>
+    </p>
+  </div>
+
+  <!-- Right Section: Login Card -->
+  <div
+    class="card shadow p-4 me-4"
+    style="border-radius: 16px; max-width: 400px; width: 100%; border: none"
+  >
+    <!-- Error message display -->
+    <% if (errorMessage) { %>
+    <div class="alert alert-danger text-center" role="alert">
+      <%= errorMessage %>
+    </div>
+    <% } %>
+    <!-- Login Form -->
+    <form action="/login" method="POST">
+      <div class="mb-3">
+        <label for="email" class="form-label fw-medium"
+          ><small>Email</small></label
+        >
+        <input
+          type="email"
+          class="form-control rounded"
+          id="email"
+          name="email"
+          placeholder="Enter your email"
+          style="height: 40px; background-color: #e9ecef"
+          required
+        />
+      </div>
+      <div class="mb-4 position-relative">
+        <label for="password" class="form-label fw-medium"
+          ><small>Password</small></label
+        >
+        <input
+          type="password"
+          class="form-control rounded"
+          id="password"
+          name="password"
+          placeholder="Enter your password"
+          style="height: 40px; background-color: #e9ecef"
+          required
+        />
+        <span
+          class="position-absolute end-0 top-50"
+          style="cursor: pointer; margin-right: 10px; margin-top: 4px"
+        >
+          <i
+            class="fa-regular fa-eye"
+            onclick="togglePasswordVisibility()"
+            id="togglePassword"
+            style="color: #b0b0b0"
+          ></i>
+        </span>
+      </div>
+      <button
+        type="submit"
+        class="btn w-100 fw-bold rounded"
+        style="height: 50px; background-color: #42c3e2; color: white"
+        onmouseover="this.style.backgroundColor='#3498db'"
+        onmouseout="this.style.backgroundColor='#42C3E2'"
+      >
+        Login
+      </button>
+    </form>
+
+    <div class="text-center mt-3">
+      <span>Don't have an account? <a href="/register">Register here</a></span>
+    </div>
+  </div>
+</div>
+<%- include("templates/footer") %>
