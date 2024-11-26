@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+    <link rel="stylesheet" href="/styles/style.css" />
+  </head>
+
+  <body>
+    <div id="home-content">
+      <h1>COMP4537 - C2P - AI-Powered Notebook</h1>
+      <p>Welcome to the AI page</p>
+      <main>
+        <h3>Create a Page</h3>
+        <form>
+          <label for="createPagePageName"
+            >Enter the page name for your context collection?</label
+          >
+          <br />
+          <input
+            id="createPagePageName"
+            type="text"
+            name="createPagePageName"
+            placeholder="Enter the Page name"
+            required
+          />
+          <br />
+          <label for createPageDescription>
+            Enter the description for your page:
+          </label>
+          <br />
+          <input
+            id="createPageDescription"
+            type="text"
+            name="createPageDescription"
+            placeholder="Enter the description if available"
+          />
+
+          <br />
+          <button type="button" onclick="createPage()">Create</button>
+        </form>
+        <div id="createPageResult"></div>
+
+        <h3>Upload context to a page</h3>
+        <form>
+          <label for="contextPageName"
+            >Select the page name for this context:</label
+          >
+          <br />
+          <select id="createContextPageName" name="createContextPageName">
+            <option value="" disabled selected>
+              Please create a page first
+            </option>
+          </select>
+          <br />
+          <br />
+          <label for="context">Enter the context:</label>
+          <br />
+          <textarea
+            id="createContextContext"
+            type="text"
+            name="context"
+            placeholder="Enter the context"
+            required
+          ></textarea>
+          <br />
+          <button type="button" onclick="createContext()">Upload</button>
+        </form>
+        <div id="createContextResult"></div>
+
+        <h3>Let's ask some question to our AI on your context</h3>
+        <form action="/askBot" method="POST">
+          <label for="askQuestionPageName"
+            >Select the page name for your question:</label
+          >
+          <br />
+          <select id="askQuestionPageName" name="askQuestionPageName">
+            <option value="" disabled selected>
+              Please create a page first
+            </option>
+          </select>
+          <br />
+          <br />
+          <label for="question">Enter the question:</label>
+          <br />
+          <input
+            type="text"
+            name="question"
+            placeholder="Enter the question"
+            required
+          />
+          <br />
+          <button type="submit">Ask</button>
+        </form>
+        <div id="answers"></div>
+      </main>
+      <br />
+      <form action="/logout" method="POST">
+        <button type="submit">Logout</button>
+      </form>
+    </div>
+
+    <script src="../js/utils.js"></script>
+    <script>
+      const pageNames = <%- JSON.stringify(pageNames) %>
+    </script>
+    <script src="../js//ai.js"></script>
+  </body>
+</html>

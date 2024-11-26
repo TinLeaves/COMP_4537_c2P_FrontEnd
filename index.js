@@ -328,6 +328,10 @@ app.get("/ai", checkLoggedIn, async (req, res) => {
   }
 });
 
+// app.get("/aitest", (req, res) => {
+//   res.render("ai"); 
+// });
+
 app.post("/createPage", async (req, res) => {
   const { pageName, description } = req.body;
 
