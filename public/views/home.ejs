@@ -1,0 +1,32 @@
+<%- include("templates/header") %>
+
+<div class="d-flex justify-content-center align-items-center flex-fill mt-5">
+    <div class="card shadow-lg p-4" style="border-radius: 16px; max-width: 800px; width: 100%; border: none;">
+      <h2 class="remove-margin-bottom mb-4 text-center">Home Page - Authenticated</h2>
+      
+      <p class="text-center mb-3"><strong>Currently logged in as:</strong> <span class="text-danger"><%= userEmail %></span></p>
+      
+      <ul class="list-unstyled">
+        <% if (userLevel === 'admin') { %>
+          <li>
+            <a href="/admin" class="btn btn-primary w-100 mb-2 fw-medium">
+              Admin Dashboard (<code>/admin</code>)
+            </a>
+          </li>
+        <% } %>
+
+        <li>
+          <a href="/user" class="btn btn-secondary w-100 mb-2 fw-medium">
+            View your API usage (<code>/user</code>)
+          </a>
+        </li>
+        <li>
+          <a href="/ai" class="btn btn-success w-100 fw-medium">
+            Use our powerful AI (<code>/ai</code>)
+          </a>
+        </li>
+      </ul>
+    </div>
+</div>
+
+<%- include("templates/footer") %>

@@ -595,7 +595,8 @@ app.get("/getAllUsersStats", checkAdmin, async (req, res) => {
     const users = results.userStats;
     console.log("/getAllUsersStats: users object:", users);
 
-    res.send(data);
+    // res.send(data);
+    res.send(users);
   } catch (error) {
     console.error("Error during fetch:", error);
     return res
@@ -686,8 +687,12 @@ app.post("/logout", (req, res) => {
 //       ╚═╝   ╚═════╝    ╚═╝
 
 app.get("/401", (req, res) => {
-  // res.sendFile(path.join(__dirname, "views", "401.html"));
-  res.render("401");
+  res.status(401).render("401");
+});
+
+app.get("/*", (req, res) => {
+  console.log("404 Error - Page Not Found");
+  res.status(404).render("404");
 });
 
 // Start the server
