@@ -201,33 +201,33 @@ const createContext = async () => {
 //   }
 // };
 
-const deleteContext = async (pageName, contextId) => {
-  try {
-    const token = localStorage.getItem("jwtToken");
-    const response = await fetch(
-      BOT_ROUTES.QUERY_CONTEXT(pageName, contextId),
-      {
-        headers: {
-          Authorization: `Bearer ${token}`,
-          "Content-Type": "application/json",
-        },
-        method: "DELETE",
-      }
-    );
+// const deleteContext = async (pageName, contextId) => {
+//   try {
+//     const token = localStorage.getItem("jwtToken");
+//     const response = await fetch(
+//       BOT_ROUTES.QUERY_CONTEXT(pageName, contextId),
+//       {
+//         headers: {
+//           Authorization: `Bearer ${token}`,
+//           "Content-Type": "application/json",
+//         },
+//         method: "DELETE",
+//       }
+//     );
 
-    const data = await response.json();
+//     const data = await response.json();
 
-    if (response.status === 200) {
-      if (data.success) {
-        return data.success;
-      }
-    } else {
-      throw new Error(data.error);
-    }
-  } catch (error) {
-    throw new ContextError(error);
-  }
-};
+//     if (response.status === 200) {
+//       if (data.success) {
+//         return data.success;
+//       }
+//     } else {
+//       throw new Error(data.error);
+//     }
+//   } catch (error) {
+//     throw new ContextError(error);
+//   }
+// };
 
 const patchPage = async (currentPageName, newPageName, newDescription) => {
   try {
@@ -306,6 +306,38 @@ const editContext = async (id) => {
   }
 };
 
+const deleteContext = async (id) => {
+  const pageName = document.getElementById("editContextPageName").value;
+  const resultContainer = document.getElementById(`editContextResult-${id}`);
+  try {
+    const response = await fetch(
+      // `https://comp4537c2pfrontend-production.up.railway.app/deleteContext`,
+      `http://localhost:3000/deleteContext`,
+      {
+        headers: {
+          "Content-Type": "application/json",
+        },
+        method: "DELETE",
+        body: JSON.stringify({
+          pageName: pageName,
+          id: id,
+        }),
+      }
+    );
+    const data = await response.json();
+    if (data) {
+      resultContainer.innerHTML = data.success;
+      resultContainer.style.color = "green";
+    } else {
+      resultContainer.innerHTML = data.error;
+      resultContainer.style.color;
+    }
+  } catch (error) {
+    resultContainer.innerHTML = error.error;
+    resultContainer.style.color = "red";
+  }
+};
+
 const editPageOnSelect = (name) => {
   const editPagePageName = document.getElementById("editPagePageName");
   const editPageDescription = document.getElementById("editPageDescription");
@@ -362,6 +394,7 @@ const editContextOnSelect = async (name) => {
                 Edit
               </button>
               <button
+                id="deleteContextButton-${context.id}"
                 type="button"
                 class="btn btn-danger w-100 fw-semibold rounded text-center mt-2 mb-3"
                 style="height: 50px"
@@ -376,6 +409,9 @@ const editContextOnSelect = async (name) => {
         document
           .getElementById(`editContextButton-${context.id}`)
           .addEventListener("click", () => editContext(context.id));
+        document
+          .getElementById(`deleteContextButton-${context.id}`)
+          .addEventListener("click", () => deleteContext(context.id));
       });
     } else {
       editContextContainer.innerHTML = data.error;

@@ -515,6 +515,31 @@ app.patch("/editContext", async (req, res) => {
   }
 });
 
+app.delete("/deleteContext", async (req, res) => {
+  const { pageName, id } = req.body;
+
+  try {
+    const response = await axios.delete(
+      // `https://comp4537-c2p-api-server-1.onrender.com/api/v1/bot/${pageName}/`,
+      `http://127.0.0.1:8000/api/v1/bot/page/${pageName}/`,
+      {
+        headers: {
+          "Content-Type": "application/x-www-form-urlencoded",
+          Authorization: `Bearer ${req.session.authToken}`,
+        },
+        data: {
+          id: id,
+        },
+      }
+    );
+
+    return res.json(response.data);
+  } catch (error) {
+    console.error("Error during fetch:", error.response.data.error);
+    return res.status(500).send({ error: error.response.data.error });
+  }
+});
+
 //  █████╗  ██████╗  ███╗   ███╗ ██╗ ███╗   ██╗
 // ██╔══██╗ ██╔══██╗ ████╗ ████║ ██║ ████╗  ██║
 // ███████║ ██║  ██║ ██╔████╔██║ ██║ ██╔██╗ ██║
