@@ -472,7 +472,7 @@ app.post("/getPageContext", async (req, res) => {
 
   try {
     const response = await axios.get(
-      `https://comp4537-c2p-api-server-1.onrender.com/api/v1/bot/${pageName}/`,
+      `https://comp4537-c2p-api-server-1.onrender.com/api/v1/bot/page/${pageName}/`,
       {
         headers: {
           Authorization: `Bearer ${req.session.authToken}`,
