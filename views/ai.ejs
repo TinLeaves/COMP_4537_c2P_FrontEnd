@@ -1,0 +1,116 @@
+<%- include("templates/header") %>
+<div class="d-flex justify-content-center align-items-center flex-fill mt-5">
+  <div class="card shadow-lg p-4 my-4" style="border-radius: 16px; max-width: 900px; width: 100%; max-height:fit-content;">
+    <h2 class="text-center mb-4">Welcome to the AI page</h2>
+
+    <!-- Accordion Start -->
+    <div class="accordion" id="accordionExample">
+
+      <!-- Create a Page Accordion Item -->
+      <div class="accordion-item">
+        <h2 class="accordion-header" id="headingOne">
+          <button class="accordion-button fw-semibold" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
+            1. Create a Page
+          </button>
+        </h2>
+        <div id="collapseOne" class="accordion-collapse collapse show" aria-labelledby="headingOne" data-bs-parent="#accordionExample">
+          <div class="accordion-body">
+            <form action="/createPage" method="POST" class="mb-4">
+              <div class="mb-3">
+                <label for="pageName" class="form-label">Enter the page name for your context collection:</label>
+                <input
+                  type="text"
+                  name="pageName"
+                  placeholder="Enter the Page name"
+                  class="form-control"
+                  required
+                />
+              </div>
+              <button type="submit" class="btn btn-primary w-100 fw-semibold rounded text-center" style="height: 50px;">Create</button>
+            </form>
+          </div>
+        </div>
+      </div>
+
+      <!-- Upload Context to a Page Accordion Item -->
+      <div class="accordion-item">
+        <h2 class="accordion-header" id="headingTwo">
+          <button class="accordion-button fw-semibold" type="button" data-bs-toggle="collapse" data-bs-target="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
+            2. Upload context to a page
+          </button>
+        </h2>
+        <div id="collapseTwo" class="accordion-collapse collapse" aria-labelledby="headingTwo" data-bs-parent="#accordionExample">
+          <div class="accordion-body">
+            <form action="/createContext" method="POST" class="mb-4">
+              <div class="mb-3">
+                <label for="contextPageName" class="form-label">Enter the page name for this context:</label>
+                <input
+                  type="text"
+                  name="contextPageName"
+                  placeholder="Enter the Page name"
+                  class="form-control"
+                  required
+                />
+              </div>
+              <div class="mb-3">
+                <label for="context" class="form-label">Enter the context:</label>
+                <textarea
+                  name="context"
+                  placeholder="Enter the context"
+                  class="form-control"
+                  required
+                ></textarea>
+              </div>
+              <button type="submit" class="btn btn-primary w-100 fw-semibold rounded text-center" style="height: 50px;">Upload</button>
+            </form>
+          </div>
+        </div>
+      </div>
+
+      <!-- Ask a Question to AI Accordion Item -->
+      <div class="accordion-item">
+        <h2 class="accordion-header" id="headingThree">
+          <button class="accordion-button fw-semibold" type="button" data-bs-toggle="collapse" data-bs-target="#collapseThree" aria-expanded="false" aria-controls="collapseThree">
+            3. Ask a Question to AI
+          </button>
+        </h2>
+        <div id="collapseThree" class="accordion-collapse collapse" aria-labelledby="headingThree" data-bs-parent="#accordionExample">
+          <div class="accordion-body">
+            <form action="/askBot" method="POST" class="mb-4">
+              <div class="mb-3">
+                <label for="questionPageName" class="form-label">Enter the page name for your context:</label>
+                <input
+                  type="text"
+                  name="questionPageName"
+                  placeholder="Enter the Page name"
+                  class="form-control"
+                  required
+                />
+              </div>
+              <div class="mb-3">
+                <label for="question" class="form-label">Enter the question:</label>
+                <input
+                  type="text"
+                  name="question"
+                  placeholder="Enter the question"
+                  class="form-control"
+                  required
+                />
+              </div>
+              <button type="submit" class="btn btn-primary w-100 fw-semibold rounded text-center" style="height: 50px;">Ask</button>
+            </form>
+          </div>
+        </div>
+      </div>
+
+    </div>
+    <!-- Accordion End -->
+
+    <div id="answers" class="mt-4"></div>
+    <div class="container text-center">
+        <button onclick="goHome()" class="btn btn-primary fw-medium">Go Home</button>
+    </div>
+  </div>
+</div>
+
+<%- include("templates/footer") %>
