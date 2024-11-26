@@ -1,14 +1,12 @@
 require("dotenv").config();
 const express = require("express");
 const session = require("express-session");
-
+const MongoStore = require("connect-mongo");
 const app = express();
 const port = 3000;
-const node_session_secret = process.env.NODE_SESSION_SECRET;
 const path = require("path");
 const jwt = require("jsonwebtoken");
 const axios = require("axios");
-
 const cookieParser = require("cookie-parser");
 
 // app.use("/views", express.static(path.join(__dirname, "views")));
@@ -28,13 +26,25 @@ const bcrypt = require("bcrypt");
 // ╚════██║ ██╔══╝   ╚════██║ ╚════██║ ██║ ██║   ██║ ██║╚██╗██║ ╚════██║
 // ███████║ ███████╗ ███████║ ███████║ ██║ ╚██████╔╝ ██║ ╚████║ ███████║
 
+const isProduction = process.env.NODE_ENV === "production";
+const mongodb_url = process.env.MONGODB_URL;
+const mongodb_session_secret = process.env.MONGODB_SESSION_SECRET;
+const node_session_secret = process.env.NODE_SESSION_SECRET;
+const mongoStore = MongoStore.create({
+  mongoUrl: mongodb_url,
+  crypto: {
+    secret: mongodb_session_secret,
+  },
+});
+
 app.use(
   session({
     secret: node_session_secret,
+    store: mongoStore,
     resave: true,
-    saveUninitialized: true,
+    saveUninitialized: false,
     cookie: {
-      secure: false, // @TODO: set to true if using https
+      secure: isProduction,
       maxAge: 60 * 60 * 1000,
     },
   })
@@ -68,6 +78,10 @@ function checkAdmin(req, res, next) {
     return res.redirect("/401");
   }
 }
+
+/**
+ * Middleware: checks if user logged in
+ */
 
 // ██╗  ██╗  ██████╗  ███╗   ███╗ ███████╗         ██╗
 // ██║  ██║ ██╔═══██╗ ████╗ ████║ ██╔════╝        ██╔╝
