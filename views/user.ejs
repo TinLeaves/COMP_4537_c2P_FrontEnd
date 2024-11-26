@@ -1,39 +1,47 @@
-<!DOCTYPE html>
-<html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>User Dashboard</title>
-    <link rel="stylesheet" href="/styles/style.css" />
-  </head>
-  <body>
-    <main class="add-margin-bottom-20">
-      <header class="add-margin-bottom-20">
-        <h1>COMP4537 - C2P - AI-Powered Notebook</h1>
-        <h2 class="remove-margin-bottom">Your Stats</h2>
-      </header>
-      <div class="container">
-        <div id="userInfo">
-          <p>ID: <span><%= user.userId %></span></p>
-          <p>Email: <span><%= user.email %></span></p>
-          <p>API Calls Used: <span><%= user.apiCallsUsed %></span></p>
-          <p>API Calls Remaining: <span><%= user.apiCallsRemaining %></span></p>
-          <% if (user.apiCallsRemaining === 0) { %>
-            <div id="errorMessage" style="color: red">Error: No API calls remaining!</div>
-            <% } else if (user.apiCallsRemaining < 5) { %>
-              <div id="warningMessage" style="color: red">Warning: Low API calls remaining!</div>
-            
-          <% } %>
-        </div>
-      </div>
-    </main>
+<%- include("templates/header") %>
+
+<div class="d-flex justify-content-center align-items-center flex-fill mt-5">
+  <div class="card shadow-lg p-4 my-4" style="border-radius: 16px; max-width: 600px; width: 100%; max-height: fit-content;">
+    <h2 class="mb-3 text-center">User Dashboard</h2>
+    <h3 class="mb-4 text-center">Your Stats</h3>
 
     <div class="container">
-      <button onclick="goBack()">Back</button>
-      <button onclick="goHome()">Home</button>
-    </div>
+      <div id="userInfo">
+        <ul class="list-group">
+          <li class="list-group-item d-flex justify-content-between align-items-center">
+            <strong>ID:</strong>
+            <span style="color: #0078d4;"><%= user.userId %></span>
+          </li>
+          <li class="list-group-item d-flex justify-content-between align-items-center">
+            <strong>Email:</strong>
+            <span style="color: #0078d4;"><%= user.email %></span>
+          </li>
+          <li class="list-group-item d-flex justify-content-between align-items-center">
+            <strong>API Calls Used:</strong>
+            <span style="color: #0078d4;"><%= user.apiCallsUsed %></span>
+          </li>
+          <li class="list-group-item d-flex justify-content-between align-items-center">
+            <strong>API Calls Remaining:</strong>
+            <span style="color: #0078d4;"><%= user.apiCallsRemaining %></span>
+          </li>
+        </ul>
+    
+        <% if (user.apiCallsRemaining === 0) { %>
+          <div id="errorMessage" class="alert alert-danger mt-3" role="alert">
+            <strong>Error:</strong> No API calls remaining!
+          </div>
+        <% } else if (user.apiCallsRemaining < 5) { %>
+          <div id="warningMessage" class="alert alert-warning mt-3" role="alert">
+            <strong>Warning:</strong> Low API calls remaining!
+          </div>
+        <% } %>
+      </div>
+    </div>    
 
-    <script src="../js/utils.js"></script>
-    <script src="../js/user.js"></script>
-  </body>
-</html>
+    <div class="container text-center mt-4">
+      <button onclick="goHome()" class="btn btn-primary fw-medium">Go Home</button>
+    </div>
+  </div>
+</div>
+
+<%- include("templates/footer") %>

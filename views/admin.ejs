@@ -1,24 +1,13 @@
-<!DOCTYPE html>
-<html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Admin Dashboard</title>
+<%- include("templates/header") %>
+<div class="d-flex justify-content-center align-items-center flex-fill mt-5">
+  <div class="card shadow-lg p-4 my-4" style="border-radius: 16px; max-width: 800px; width: 100%; max-height:fit-content;">
+      <h2 class="mb-2 text-center">Admin Dashboard</h2>
+      <p class="text-danger mb-4"><code>Admin access only</code></p>
 
-    <link rel="stylesheet" href="/styles/style.css" />
-  </head>
-
-  <body>
-    <header class="add-margin-bottom-20">
-      <h1>COMP4537 - C2P - AI-Powered Notebook</h1>
-      <h2 class="remove-margin-bottom">Admin dashboard</h2>
-      <code style="color: red">Admin access only</code>
-    </header>
-    <main class="add-margin-bottom-20">
-      <div class="container add-margin-bottom-20">
-        <h2>User API Calls Consumption</h2>
-        <div id="adminInfo">
-          <table id="userTable">
+      <div class="container">
+        <h3>User API Calls Consumption</h3>
+        <div id="adminInfo" class="table-responsive">
+          <table id="userTable" class="table table-striped table-bordered">
             <thead>
               <tr>
                 <th>Email</th>
@@ -27,35 +16,34 @@
               </tr>
             </thead>
             <tbody>
-              <% if (users && users.length > 0) { %>
+              <% if (users && users.length> 0) { %>
                 <% users.forEach(function(user) { %>
                   <tr>
-                    <td><%= user.user__email %></td>
-                    <td><%= user.request_count %></td>
-                    <td><%= user.token_count %></td>
+                    <td>
+                      <%= user.user__email %>
+                    </td>
+                    <td>
+                      <%= user.request_count %>
+                    </td>
+                    <td>
+                      <%= user.token_count %>
+                    </td>
                   </tr>
-                <% }) %>
-              <% } else { %>
-                <tr>
-                  <td colspan="3">No user data available</td>
-                </tr>
-              <% } %>
+                  <% }) %>
+                    <% } else { %>
+                      <tr>
+                        <td colspan="3" class="text-center">No user data available</td>
+                      </tr>
+                      <% } %>
             </tbody>
           </table>
         </div>
       </div>
-    </main>
-    <hr />
-    <div style="margin-top: 1em">
-        <button onclick="goHome()">Home</button>
-        <br />
-        <br />
-      <form action="/logout" method="POST">
-        <button type="submit">Logout</button>
-      </form>
-    </div>
 
-    <script src="../js/utils.js"></script>
-    <script src="../js/admin.js"></script>
-  </body>
-</html>
+    <div class="container text-center">
+      <button onclick="goHome()" class="btn btn-primary fw-medium">Go Home</button>
+    </div>
+  </div>
+</div>
+
+  <%- include("templates/footer") %>
