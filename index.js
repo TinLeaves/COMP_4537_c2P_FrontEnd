@@ -82,6 +82,13 @@ function checkAdmin(req, res, next) {
 /**
  * Middleware: checks if user logged in
  */
+const checkLoggedIn = (req, res, next) => {
+  if (req.session.authenticated) {
+    return next();
+  } else {
+    return res.redirect("/401");
+  }
+};
 
 // ██╗  ██╗  ██████╗  ███╗   ███╗ ███████╗         ██╗
 // ██║  ██║ ██╔═══██╗ ████╗ ████║ ██╔════╝        ██╔╝
@@ -259,6 +266,7 @@ app.post("/login", async (req, res) => {
       req.session.authToken = jwtToken;
       req.session.userId = userId;
       req.session.email = email;
+      req.session.authenticated = true;
       setAuthLevel(identifier, req);
       console.log("current session level:", req.session.userLevel);
       console.log("Redirecting...");
@@ -290,7 +298,7 @@ app.post("/login", async (req, res) => {
 // ██║  ██║ ██║     ███████╗ ██║ ╚████║ ██████╔╝ ██║      ╚██████╔╝ ██║ ██║ ╚████║    ██║    ███████║
 // ╚═╝  ╚═╝ ╚═╝     ╚══════╝ ╚═╝  ╚═══╝ ╚═════╝  ╚═╝       ╚═════╝  ╚═╝ ╚═╝  ╚═══╝    ╚═╝    ╚══════╝
 
-app.get("/ai", checkAdmin, async (req, res) => {
+app.get("/ai", checkLoggedIn, async (req, res) => {
   try {
     const response = await axios.get(
       `https://comp4537-c2p-api-server-1.onrender.com/api/v1/bot/page/`,
