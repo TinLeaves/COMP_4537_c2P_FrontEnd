@@ -43,7 +43,7 @@
         <div id="createPageResult"></div>
 
         <h3>Upload context to a page</h3>
-        <form action="/createContext" method="POST">
+        <form>
           <label for="contextPageName"
             >Select the page name for this context:</label
           >
@@ -58,14 +58,16 @@
           <label for="context">Enter the context:</label>
           <br />
           <textarea
+            id="createContextContext"
             type="text"
             name="context"
             placeholder="Enter the context"
             required
           ></textarea>
           <br />
-          <button type="submit">Upload</button>
+          <button type="button" onclick="createContext()">Upload</button>
         </form>
+        <div id="createContextResult"></div>
 
         <h3>Let's ask some question to our AI on your context</h3>
         <form action="/askBot" method="POST">

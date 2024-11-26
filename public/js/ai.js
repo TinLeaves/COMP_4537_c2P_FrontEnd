@@ -136,7 +136,6 @@ const createPage = async () => {
     });
 
     const data = await response.json();
-    console.log("data: ", data.success);
 
     if (data) {
       createPageResult.innerHTML = data.success;
@@ -151,29 +150,32 @@ const createPage = async () => {
   }
 };
 
-const createContext = async (pageName, text) => {
+const createContext = async () => {
+  const createContextResult = document.getElementById("createContextResult");
+  const pageName = document.getElementById("createContextPageName").value;
+  const context = document.getElementById("createContextContext").value;
+
   try {
-    const token = localStorage.getItem("jwtToken");
-    const response = await fetch(BOT_ROUTES.CONTEXT(pageName), {
+    const response = await fetch(`http://localhost:3000/createContext`, {
       headers: {
-        Authorization: `Bearer ${token}`,
         "Content-Type": "application/json",
       },
       method: "POST",
-      body: JSON.stringify({ text: data }),
+      body: JSON.stringify({ pageName: pageName, context: context }),
     });
 
     const data = await response.json();
 
-    if (response.status === 201) {
-      if (data.success) {
-        return data.success;
-      }
+    if (data) {
+      createContextResult.innerHTML = data.success;
+      createContextResult.style.color = "green";
     } else {
-      throw new Error(data.error);
+      createContextResult.innerHTML = data.error;
+      createContextResult.style.color = "red";
     }
   } catch (error) {
-    throw new ContextError(error);
+    createContextResult.innerHTML = error.error;
+    createContextResult.style.color = "red";
   }
 };
 

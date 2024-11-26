@@ -354,11 +354,11 @@ app.post("/createPage", async (req, res) => {
 });
 
 app.post("/createContext", async (req, res) => {
-  const { contextPageName, context } = req.body;
+  const { pageName, context } = req.body;
 
   try {
     const response = await axios.post(
-      `https://comp4537-c2p-api-server-1.onrender.com/api/v1/bot/${req.session.userId}/page/${contextPageName}/`,
+      `https://comp4537-c2p-api-server-1.onrender.com/api/v1/bot/page/${pageName}/`,
       {
         text: context,
       },
@@ -369,10 +369,10 @@ app.post("/createContext", async (req, res) => {
         },
       }
     );
-    return res.redirect("/ai");
+    return res.json(response.data);
   } catch (error) {
-    console.error("Error during fetch:", error.response.data.error);
-    return res.status(500).send({ error: error.response.data.error });
+    console.error("Error during fetch:", error);
+    return res.status(500).send({ error: error });
   }
 });
 
