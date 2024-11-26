@@ -312,5 +312,7 @@ const loadPageNames = () => {
 };
 
 document.addEventListener("DOMContentLoaded", () => {
-  loadPageNames();
+  if (pageNames.length > 0) {
+    loadPageNames();
+  }
 });
