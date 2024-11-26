@@ -531,7 +531,8 @@ app.get("/getAllUsersStats", checkAdmin, async (req, res) => {
     const users = results.userStats
     console.log("/getAllUsersStats: users object:", users);
 
-    res.send(data);
+    // res.send(data);
+    res.send(users);
 
   } catch (error) {
     console.error("Error during fetch:", error);
