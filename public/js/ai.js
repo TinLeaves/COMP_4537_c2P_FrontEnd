@@ -95,29 +95,32 @@ const getContext = async (pageName) => {
   }
 };
 
-const askBot = async (pageName, question) => {
+const askBot = async () => {
+  const answerContainer = document.getElementById("answers");
+  const pageName = document.getElementById("askQuestionPageName").value;
+  const question = document.getElementById("question").value;
   try {
-    const token = localStorage.getItem("jwtToken");
-    const response = await fetch(BOT_ROUTES.ASK(pageName), {
+    const response = await fetch(`http://localhost:3000/askBot`, {
       headers: {
-        Authorization: `Bearer ${token}`,
         "Content-Type": "application/json",
       },
       method: "POST",
-      body: JSON.stringify({ question: question }),
+      body: JSON.stringify({ pageName: pageName, question: question }),
     });
 
     const data = await response.json();
 
-    if (response.status === 200) {
-      if (data.response) {
-        return data.response;
-      }
+    if (data?.response) {
+      answerContainer.innerHTML = data.response.map((answer) => {
+        return `<li><p>${answer.text}</p><p>Score: ${answer.score} - ${answer.document}</p></li>`;
+      });
     } else {
-      throw new Error(data.error);
+      answerContainer.innerHTML = data.error;
+      answerContainer.style.color = "red";
     }
   } catch (error) {
-    throw new AskError(error);
+    answerContainer.innerHTML = error.error;
+    answerContainer.style.color = "red";
   }
 };
 
