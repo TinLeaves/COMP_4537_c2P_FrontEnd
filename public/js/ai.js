@@ -101,7 +101,8 @@ const askBot = async () => {
   const question = document.getElementById("question").value;
   try {
     const response = await fetch(
-      `https://comp4537c2pfrontend-production.up.railway.app/askBot`,
+      // `https://comp4537c2pfrontend-production.up.railway.app/askBot`,
+      `http://localhost:3000/askBot`,
       {
         headers: {
           "Content-Type": "application/json",
@@ -114,9 +115,11 @@ const askBot = async () => {
     const data = await response.json();
 
     if (data?.response) {
-      answerContainer.innerHTML = data.response.map((answer) => {
-        return `<li><p>${answer.text}</p><p>Score: ${answer.score} - ${answer.document}</p></li>`;
+      let responseList = "";
+      data.response.forEach((answer) => {
+        responseList += `<li><p>${answer.text}</p><p>Score: ${answer.score} - ${answer.document}</p></li>`;
       });
+      answerContainer.innerHTML = responseList;
     } else {
       answerContainer.innerHTML = data.error;
       answerContainer.style.color = "red";
@@ -134,7 +137,8 @@ const createPage = async () => {
 
   try {
     const response = await fetch(
-      `https://comp4537c2pfrontend-production.up.railway.app/createPage`,
+      // `https://comp4537c2pfrontend-production.up.railway.app/createPage`,
+      `http://localhost:3000/createPage`,
       {
         headers: {
           "Content-Type": "application/json",
@@ -166,7 +170,8 @@ const createContext = async () => {
 
   try {
     const response = await fetch(
-      `https://comp4537c2pfrontend-production.up.railway.app/createContext`,
+      // `https://comp4537c2pfrontend-production.up.railway.app/createContext`,
+      `http://localhost:3000/createContext`,
       {
         headers: {
           "Content-Type": "application/json",
