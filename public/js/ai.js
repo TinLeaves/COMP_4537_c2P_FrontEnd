@@ -1,41 +1,3 @@
-const BOT_ROUTES = {
-  PAGES: () => "/api/v1/bot/page/",
-  QUERY_PAGE: (pageName) => `/api/v1/bot/page/?name=${pageName}`,
-  CONTEXT: (pageName) => `/api/v1/bot/page/${pageName}/`,
-  QUERY_CONTEXT: (pageName, contextId) =>
-    `/api/v1/bot/page/${pageName}/context/?id=${contextId}`,
-  ASK: (pageName) => `/api/v1/bot/page/${pageName}/ask/`,
-};
-
-class PageError extends Error {}
-class ContextError extends Error {}
-class AskError extends Error {}
-
-const getContext = async (pageName) => {
-  try {
-    const token = localStorage.getItem("jwtToken");
-    const response = await fetch(BOT_ROUTES.CONTEXT(pageName), {
-      headers: {
-        Authorization: `Bearer ${token}`,
-        "Content-Type": "application/json",
-      },
-      method: "GET",
-    });
-
-    const data = await response.json();
-
-    if (response.status === 200) {
-      if (data.contexts) {
-        return data.contexts;
-      }
-    } else {
-      throw new Error(data.error);
-    }
-  } catch (error) {
-    throw new ContextError(error);
-  }
-};
-
 const askBot = async () => {
   const answerContainer = document.getElementById("answers");
   const pageName = document.getElementById("askQuestionPageName").value;
@@ -43,7 +5,6 @@ const askBot = async () => {
   try {
     const response = await fetch(
       `https://comp4537c2pfrontend-production.up.railway.app/askBot`,
-      // `http://localhost:3000/askBot`,
       {
         headers: {
           "Content-Type": "application/json",
@@ -79,7 +40,6 @@ const createPage = async () => {
   try {
     const response = await fetch(
       `https://comp4537c2pfrontend-production.up.railway.app/createPage`,
-      // `http://localhost:3000/createPage`,
       {
         headers: {
           "Content-Type": "application/json",
@@ -112,7 +72,6 @@ const createContext = async () => {
   try {
     const response = await fetch(
       `https://comp4537c2pfrontend-production.up.railway.app/createContext`,
-      // `http://localhost:3000/createContext`,
       {
         headers: {
           "Content-Type": "application/json",
@@ -134,131 +93,6 @@ const createContext = async () => {
   } catch (error) {
     createContextResult.innerHTML = error.error;
     createContextResult.style.color = "red";
-  }
-};
-
-const deletePage = async (pageName) => {
-  try {
-    const token = localStorage.getItem("jwtToken");
-    const response = await fetch(BOT_ROUTES.QUERY_PAGE(pageName), {
-      headers: {
-        Authorization: `Bearer ${token}`,
-        "Content-Type": "application/json",
-      },
-      method: "DELETE",
-    });
-
-    const data = await response.json();
-
-    if (response.status === 200) {
-      if (data.success) {
-        return data.success;
-      }
-    } else {
-      throw new Error(data.error);
-    }
-  } catch (error) {
-    throw new PageError(error);
-  }
-};
-
-const deleteContext = async (pageName, contextId) => {
-  try {
-    const token = localStorage.getItem("jwtToken");
-    const response = await fetch(
-      BOT_ROUTES.QUERY_CONTEXT(pageName, contextId),
-      {
-        headers: {
-          Authorization: `Bearer ${token}`,
-          "Content-Type": "application/json",
-        },
-        method: "DELETE",
-      }
-    );
-
-    const data = await response.json();
-
-    if (response.status === 200) {
-      if (data.success) {
-        return data.success;
-      }
-    } else {
-      throw new Error(data.error);
-    }
-  } catch (error) {
-    throw new ContextError(error);
-  }
-};
-
-const patchPage = async (currentPageName, newPageName, newDescription) => {
-  try {
-    const token = localStorage.getItem("jwtToken");
-
-    const body = {};
-
-    if (currentPageName) {
-      body.name = newPageName;
-    } else {
-      throw new Error("Current page name is required");
-    }
-
-    if (newDescription) {
-      body.description = newDescription;
-    }
-
-    if (newPageName) {
-      body.new_name = newPageName;
-    }
-
-    const response = await fetch(BOT_ROUTES.PAGES(), {
-      headers: {
-        Authorization: `Bearer ${token}`,
-        "Content-Type": "application/json",
-      },
-      method: "PATCH",
-      body: JSON.stringify(body),
-    });
-
-    const data = await response.json();
-
-    if (response.status === 200) {
-      if (data.success) {
-        return data.success;
-      }
-    } else {
-      throw new Error(data.error);
-    }
-  } catch (error) {
-    throw new PageError(error);
-  }
-};
-
-const patchContext = async (pageName, contextId, text) => {
-  try {
-    const token = localStorage.getItem("jwtToken");
-    const response = await fetch(BOT_ROUTES.CONTEXT(pageName), {
-      headers: {
-        Authorization: `Bearer ${token}`,
-        "Content-Type": "application/json",
-      },
-      method: "PATCH",
-      body: JSON.stringify({
-        id: contextId,
-        text: text,
-      }),
-    });
-
-    const data = await response.json();
-
-    if (response.status === 200) {
-      if (data.success) {
-        return data.success;
-      }
-    } else {
-      throw new Error(data.error);
-    }
-  } catch (error) {
-    throw new ContextError(error);
   }
 };
 

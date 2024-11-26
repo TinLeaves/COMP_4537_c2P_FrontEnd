@@ -130,64 +130,6 @@
           </div>
         </div>
       </div>
-
-      <!-- Ask a Question to AI Accordion Item -->
-      <div class="accordion-item">
-        <h2 class="accordion-header" id="headingThree">
-          <button
-            class="accordion-button fw-semibold"
-            type="button"
-            data-bs-toggle="collapse"
-            data-bs-target="#collapseThree"
-            aria-expanded="false"
-            aria-controls="collapseThree"
-          >
-            3. Ask a Question to AI
-          </button>
-        </h2>
-        <div
-          id="collapseThree"
-          class="accordion-collapse collapse"
-          aria-labelledby="headingThree"
-          data-bs-parent="#accordionExample"
-        >
-          <div class="accordion-body">
-            <form class="mb-4">
-              <div class="mb-3">
-                <label for="askQuestionPageName" class="form-label"
-                  >Enter the page name for your context:</label
-                >
-                <select name="askQuestionPageName" id="askQuestionPageName">
-                  <option value="" selected disabled>Select a Page</option>
-                </select>
-              </div>
-              <div class="mb-3">
-                <label for="question" class="form-label"
-                  >Enter the question:</label
-                >
-                <input
-                  id="question"
-                  type="text"
-                  name="question"
-                  placeholder="Enter the question"
-                  style="background-color: #e9ecef"
-                  class="form-control"
-                  required
-                />
-              </div>
-              <button
-                type="button"
-                onclick="askBot()"
-                class="btn btn-primary w-100 fw-semibold rounded text-center"
-                style="height: 50px"
-              >
-                Ask
-              </button>
-            </form>
-            <ul id="answers"></ul>
-          </div>
-        </div>
-      </div>
     </div>
     <!-- Accordion End -->
 

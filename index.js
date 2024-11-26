@@ -422,8 +422,7 @@ app.patch("/editPage", async (req, res) => {
   const { pageName, newPageName, description } = req.body;
   try {
     const response = await axios.patch(
-      // `https://comp4537-c2p-api-server-1.onrender.com/api/v1/bot/page/`,
-      `http://127.0.0.1:8000/api/v1/bot/page/`,
+      `https://comp4537-c2p-api-server-1.onrender.com/api/v1/bot/page/`,
       {
         name: pageName,
         new_name: newPageName,
@@ -449,8 +448,7 @@ app.delete("/deletePage", async (req, res) => {
 
   try {
     const response = await axios.delete(
-      // `https://comp4537-c2p-api-server-1.onrender.com/api/v1/bot/page/`,
-      `http://127.0.0.1:8000/api/v1/bot/page/`,
+      `https://comp4537-c2p-api-server-1.onrender.com/api/v1/bot/page/`,
       {
         headers: {
           "Content-Type": "application/x-www-form-urlencoded",
@@ -474,8 +472,7 @@ app.post("/getPageContext", async (req, res) => {
 
   try {
     const response = await axios.get(
-      // `https://comp4537-c2p-api-server-1.onrender.com/api/v1/bot/${pageName}/`,
-      `http://127.0.0.1:8000/api/v1/bot/page/${pageName}/`,
+      `https://comp4537-c2p-api-server-1.onrender.com/api/v1/bot/${pageName}/`,
       {
         headers: {
           Authorization: `Bearer ${req.session.authToken}`,
@@ -494,8 +491,7 @@ app.patch("/editContext", async (req, res) => {
   const { pageName, id, text } = req.body;
   try {
     const response = await axios.patch(
-      // `https://comp4537-c2p-api-server-1.onrender.com/api/v1/bot/${pageName}/`,
-      `http://127.0.0.1:8000/api/v1/bot/page/${pageName}/`,
+      `https://comp4537-c2p-api-server-1.onrender.com/api/v1/bot/page/${pageName}/`,
       {
         id: id,
         text: text,
@@ -520,8 +516,7 @@ app.delete("/deleteContext", async (req, res) => {
 
   try {
     const response = await axios.delete(
-      // `https://comp4537-c2p-api-server-1.onrender.com/api/v1/bot/${pageName}/`,
-      `http://127.0.0.1:8000/api/v1/bot/page/${pageName}/`,
+      `https://comp4537-c2p-api-server-1.onrender.com/api/v1/bot/page/${pageName}/`,
       {
         headers: {
           "Content-Type": "application/x-www-form-urlencoded",
