@@ -313,7 +313,6 @@ const loadPageNames = () => {
   );
   const askQuestionPageName = document.getElementById("askQuestionPageName");
   const pageSelections = pageNames.map((pageName) => {
-    console.log(pageName.name);
     return `<option value="${pageName.name}">${pageName.name}</option>`;
   });
   createContextPageName.innerHTML = pageSelections;
