@@ -100,13 +100,16 @@ const askBot = async () => {
   const pageName = document.getElementById("askQuestionPageName").value;
   const question = document.getElementById("question").value;
   try {
-    const response = await fetch(`http://localhost:3000/askBot`, {
-      headers: {
-        "Content-Type": "application/json",
-      },
-      method: "POST",
-      body: JSON.stringify({ pageName: pageName, question: question }),
-    });
+    const response = await fetch(
+      `https://comp4537c2pfrontend-production.up.railway.app/askBot`,
+      {
+        headers: {
+          "Content-Type": "application/json",
+        },
+        method: "POST",
+        body: JSON.stringify({ pageName: pageName, question: question }),
+      }
+    );
 
     const data = await response.json();
 
@@ -130,13 +133,16 @@ const createPage = async () => {
   const description = document.getElementById("createPageDescription").value;
 
   try {
-    const response = await fetch(`http://localhost:3000/createPage`, {
-      headers: {
-        "Content-Type": "application/json",
-      },
-      method: "POST",
-      body: JSON.stringify({ pageName: pageName, description: description }),
-    });
+    const response = await fetch(
+      `https://comp4537c2pfrontend-production.up.railway.app/createPage`,
+      {
+        headers: {
+          "Content-Type": "application/json",
+        },
+        method: "POST",
+        body: JSON.stringify({ pageName: pageName, description: description }),
+      }
+    );
 
     const data = await response.json();
 
@@ -159,13 +165,16 @@ const createContext = async () => {
   const context = document.getElementById("createContextContext").value;
 
   try {
-    const response = await fetch(`http://localhost:3000/createContext`, {
-      headers: {
-        "Content-Type": "application/json",
-      },
-      method: "POST",
-      body: JSON.stringify({ pageName: pageName, context: context }),
-    });
+    const response = await fetch(
+      `https://comp4537c2pfrontend-production.up.railway.app/createContext`,
+      {
+        headers: {
+          "Content-Type": "application/json",
+        },
+        method: "POST",
+        body: JSON.stringify({ pageName: pageName, context: context }),
+      }
+    );
 
     const data = await response.json();
 
