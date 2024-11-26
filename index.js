@@ -259,6 +259,10 @@ app.get("/ai", (req, res) => {
   res.sendFile(path.join(__dirname, "views", "ai.html"));
 });
 
+// app.get("/aitest", (req, res) => {
+//   res.render("ai"); 
+// });
+
 app.post("/createPage", async (req, res) => {
   const { pageName } = req.body;
 
