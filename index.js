@@ -276,9 +276,22 @@ app.post("/login", async (req, res) => {
 // ██║  ██║ ██║     ███████╗ ██║ ╚████║ ██████╔╝ ██║      ╚██████╔╝ ██║ ██║ ╚████║    ██║    ███████║
 // ╚═╝  ╚═╝ ╚═╝     ╚══════╝ ╚═╝  ╚═══╝ ╚═════╝  ╚═╝       ╚═════╝  ╚═╝ ╚═╝  ╚═══╝    ╚═╝    ╚══════╝
 
-app.get("/ai", checkAdmin, (req, res) => {
-  // res.sendFile(path.join(__dirname, "views", "ai.html"));
-  res.render("ai");
+app.get("/ai", checkAdmin, async (req, res) => {
+  try {
+    const response = await axios.get(
+      `https://comp4537-c2p-api-server-1.onrender.com/api/v1/bot/page/`,
+      {
+        headers: {
+          Authorization: `Bearer ${req.session.authToken}`,
+        },
+      }
+    );
+    res.render("ai", { pageNames: response?.data?.pages });
+  } catch (error) {
+    console.error("Error during fetch:", error.response.data.error);
+    return res.render("401"); // change to 404
+    return;
+  }
 });
 
 app.post("/createPage", async (req, res) => {

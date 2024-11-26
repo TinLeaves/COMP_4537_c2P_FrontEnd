@@ -14,7 +14,7 @@
       <main>
         <h3>Create a Page</h3>
         <form action="/createPage" method="POST">
-          <label for="pageName"
+          <label for="createContextPageName"
             >Enter the page name for your context collection?</label
           >
           <br />
@@ -24,6 +24,7 @@
             placeholder="Enter the Page name"
             required
           />
+
           <br />
           <button type="submit">Create</button>
         </form>
@@ -31,15 +32,12 @@
         <h3>Upload context to a page</h3>
         <form action="/createContext" method="POST">
           <label for="contextPageName"
-            >Enter the page name for this context:</label
+            >Select the page name for this context:</label
           >
           <br />
-          <input
-            type="text"
-            name="contextPageName"
-            placeholder="Enter the Page name"
-            required
-          />
+          <select id="createContextPageName" name="createContextPageName">
+            <option value="" disabled selected>Select a page</option>
+          </select>
           <br />
           <br />
           <label for="context">Enter the context:</label>
@@ -56,16 +54,13 @@
 
         <h3>Let's ask some question to our AI on your context</h3>
         <form action="/askBot" method="POST">
-          <label for="questionPageName"
-            >Enter the page name for your context:</label
+          <label for="askQuestionPageName"
+            >Select the page name for your question:</label
           >
           <br />
-          <input
-            type="text"
-            name="questionPageName"
-            placeholder="Enter the Page name"
-            required
-          />
+          <select id="askQuestionPageName" name="askQuestionPageName">
+            <option value="" disabled selected>Select a page</option>
+          </select>
           <br />
           <br />
           <label for="question">Enter the question:</label>
@@ -87,6 +82,10 @@
       </form>
     </div>
 
-    <script src="/js/utils.js"></script>
+    <script src="../js/utils.js"></script>
+    <script>
+      const pageNames = <%- JSON.stringify(pageNames) %>
+    </script>
+    <script src="../js/ai.js"></script>
   </body>
 </html>
