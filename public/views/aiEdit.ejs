@@ -43,7 +43,7 @@
                 <label for="editPagePageId" class="form-label"
                   >Selet the page name for edit:</label
                 >
-                <select name="editPagePageOriName" id="editPagePageOriName" onchange="editAiPageOnSelect(this.value)">
+                <select name="editPagePageOriName" id="editPagePageOriName" onchange="editPageOnSelect(this.value)">
                   <option value="" selected disabled>Select a Page</option>
                 </select>
               </div>
@@ -106,7 +106,7 @@
             aria-expanded="false"
             aria-controls="collapseTwo"
           >
-            2. Upload context to a page
+            2. Edit Page Context
           </button>
         </h2>
         <div
@@ -118,34 +118,13 @@
           <div class="accordion-body">
             <form class="mb-4">
               <div class="mb-3">
-                <label for="createContextPageName" class="form-label"
-                  >Enter the page name for this context:</label
+                <label for="editContextPageName" class="form-label">Select the page name for this context edition:</label
                 >
-                <select name="createContextPageName" id="createContextPageName">
+                <select name="editContextPageName" id="editContextPageName" onchange="editContextOnSelect(this.value)">
                   <option value="" selected disabled>Select a Page</option>
                 </select>
               </div>
-              <div class="mb-3">
-                <label for="createContextContext" class="form-label"
-                  >Enter the context:</label
-                >
-                <textarea
-                  id="createContextContext"
-                  name="createContextContext"
-                  placeholder="Enter the context"
-                  style="background-color: #e9ecef"
-                  class="form-control"
-                  required
-                ></textarea>
-              </div>
-              <button
-                type="button"
-                onclick="createContext()"
-                class="btn btn-primary w-100 fw-semibold rounded text-center"
-                style="height: 50px"
-              >
-                Upload
-              </button>
+              <div id="editContextContextContainer"></div>
             </form>
             <div id="createContextResult"></div>
           </div>
