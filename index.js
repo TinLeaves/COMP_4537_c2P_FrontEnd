@@ -20,6 +20,7 @@ app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 const bcrypt = require("bcrypt");
 
+app.set("trust proxy", 1);
 app.use(
   cors({
     origin: [process.env.SITE_URL, "http://localhost:3000"],
