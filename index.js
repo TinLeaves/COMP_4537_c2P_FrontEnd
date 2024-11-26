@@ -8,7 +8,7 @@ const path = require("path");
 const jwt = require("jsonwebtoken");
 const axios = require("axios");
 const cookieParser = require("cookie-parser");
-
+const cors = require("cors");
 // app.use("/views", express.static(path.join(__dirname, "views")));
 // app.use("/js", express.static(path.join(__dirname, "js")));
 app.use(express.static(path.join(__dirname, "/public")));
@@ -19,6 +19,14 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 const bcrypt = require("bcrypt");
+
+app.use(
+  cors({
+    origin: [process.env.SITE_URL, "http://localhost:3000"],
+    methods: ["GET", "POST", "PATCH", "DELETE"],
+    allowedHeaders: ["Content-Type", "Authorization"],
+  })
+);
 
 // ███████╗ ███████╗ ███████╗ ███████╗ ██╗  ██████╗  ███╗   ██╗ ███████╗
 // ██╔════╝ ██╔════╝ ██╔════╝ ██╔════╝ ██║ ██╔═══██╗ ████╗  ██║ ██╔════╝
