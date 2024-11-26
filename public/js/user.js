@@ -26,7 +26,7 @@ async function fetchUserData() {
 
 function logout() {
   localStorage.removeItem("jwtToken");
-  window.location.href = "/login";
+  window.location.href = "/logout";
 }
 
 document.addEventListener("DOMContentLoaded", function () {

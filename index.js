@@ -89,6 +89,10 @@ function checkAdmin(req, res, next) {
 
 /**
  * Middleware: checks if user logged in
+ *
+ * @param {*} req
+ * @param {*} res
+ * @param {*} next
  */
 const checkLoggedIn = (req, res, next) => {
   if (req.session.authenticated) {

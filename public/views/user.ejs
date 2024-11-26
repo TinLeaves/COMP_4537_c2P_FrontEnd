@@ -19,10 +19,14 @@
           <p>API Calls Used: <span><%= user.apiCallsUsed %></span></p>
           <p>API Calls Remaining: <span><%= user.apiCallsRemaining %></span></p>
           <% if (user.apiCallsRemaining === 0) { %>
-            <div id="errorMessage" style="color: red">Error: No API calls remaining!</div>
-            <% } else if (user.apiCallsRemaining < 5) { %>
-              <div id="warningMessage" style="color: red">Warning: Low API calls remaining!</div>
-            
+          <div id="errorMessage" style="color: red">
+            Error: No API calls remaining!
+          </div>
+          <% } else if (user.apiCallsRemaining < 5) { %>
+          <div id="warningMessage" style="color: red">
+            Warning: Low API calls remaining!
+          </div>
+
           <% } %>
         </div>
       </div>
@@ -31,9 +35,11 @@
     <div class="container">
       <button onclick="goBack()">Back</button>
       <button onclick="goHome()">Home</button>
+      <form action="/logout" method="POST">
+        <button type="submit">Logout</button>
+      </form>
     </div>
 
     <script src="../js/utils.js"></script>
-    <script src="../js/user.js"></script>
   </body>
 </html>
