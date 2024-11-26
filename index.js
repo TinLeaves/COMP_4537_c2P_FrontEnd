@@ -629,9 +629,13 @@ app.post("/logout", (req, res) => {
 //       ╚═╝   ╚═════╝    ╚═╝
 
 app.get("/401", (req, res) => {
-  res.sendFile(path.join(__dirname, "views", "401.html"));
+  res.status(401).render("401");
 });
 
+app.get("/*", (req, res) => {
+  console.log("404 Error - Page Not Found");
+  res.status(404).render("404");
+});
 
 // Start the server
 app.listen(port, () => {
