@@ -1,0 +1,145 @@
+<%- include("templates/header") %>
+<script>
+  const pageNames = <%- JSON.stringify(pageNames) %>;
+</script>
+<script src="../js/aiEdit.js"></script>
+<div class="d-flex justify-content-center align-items-center flex-fill mt-5">
+  <div
+    class="card shadow-lg p-4 my-4"
+    style="
+      border-radius: 16px;
+      max-width: 900px;
+      width: 100%;
+      max-height: fit-content;
+    "
+  >
+    <h2 class="text-center mb-4">Welcome to the AI page</h2>
+
+    <!-- Accordion Start -->
+    <div class="accordion" id="accordionExample">
+      <!-- Create a Page Accordion Item -->
+      <div class="accordion-item">
+        <h2 class="accordion-header" id="headingOne">
+          <button
+            class="accordion-button fw-semibold"
+            type="button"
+            data-bs-toggle="collapse"
+            data-bs-target="#collapseOne"
+            aria-expanded="true"
+            aria-controls="collapseOne"
+          >
+            1. Edit a Page
+          </button>
+        </h2>
+        <div
+          id="collapseOne"
+          class="accordion-collapse collapse show"
+          aria-labelledby="headingOne"
+          data-bs-parent="#accordionExample"
+        >
+          <div class="accordion-body">
+            <form class="mb-4">
+              <div class="mb-3">
+                <label for="editPagePageId" class="form-label"
+                  >Selet the page name for edit:</label
+                >
+                <select name="editPagePageOriName" id="editPagePageOriName" onchange="editPageOnSelect(this.value)">
+                  <option value="" selected disabled>Select a Page</option>
+                </select>
+              </div>
+              <div class="mb-3">
+                <label for="editPagePageName" class="form-label"
+                  >Enter the page name:</label
+                >
+                <input
+                  id="editPagePageName"
+                  name="editPagePageName"
+                  placeholder="Enter the page name"
+                  style="background-color: #e9ecef"
+                  class="form-control"
+                  required
+                ></input>
+              </div>
+              <div class="mb-3">
+                <label for="editPageDescription" class="form-label"
+                  >Enter the page description:</label
+                >
+                <textarea
+                  id="editPageDescription"
+                  name="editPageDescription"
+                  placeholder="Enter the page description"
+                  style="background-color: #e9ecef"
+                  class="form-control"
+                  required
+                ></textarea>
+              </div>
+              <button
+                type="button"
+                onclick="editPage()"
+                class="btn btn-primary w-100 fw-semibold rounded text-center"
+                style="height: 50px"
+              >
+                Update
+              </button>
+              <button
+                type="button"
+                onclick="deletePage()"
+                class="btn btn-danger w-100 fw-semibold rounded text-center mt-2"
+                style="height: 50px"
+              >
+                Delete
+              </button>
+            </form>
+            <div id="editPageResult"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Upload Context to a Page Accordion Item -->
+      <div class="accordion-item">
+        <h2 class="accordion-header" id="headingTwo">
+          <button
+            class="accordion-button fw-semibold"
+            type="button"
+            data-bs-toggle="collapse"
+            data-bs-target="#collapseTwo"
+            aria-expanded="false"
+            aria-controls="collapseTwo"
+          >
+            2. Edit Page Context
+          </button>
+        </h2>
+        <div
+          id="collapseTwo"
+          class="accordion-collapse collapse"
+          aria-labelledby="headingTwo"
+          data-bs-parent="#accordionExample"
+        >
+          <div class="accordion-body">
+            <form class="mb-4">
+              <div class="mb-3">
+                <label for="editContextPageName" class="form-label">Select the page name for this context edition:</label
+                >
+                <select name="editContextPageName" id="editContextPageName" onchange="editContextOnSelect(this.value)">
+                  <option value="" selected disabled>Select a Page</option>
+                </select>
+              </div>
+              <div id="editContextContextContainer"></div>
+            </form>
+            <div id="createContextResult"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- Accordion End -->
+
+    <div id="answers" class="mt-4"></div>
+    <div class="container text-center">
+      <button onclick="goHome()" class="btn btn-primary fw-medium">
+        Go Home
+      </button>
+    </div>
+  </div>
+</div>
+
+<%- include("templates/footer") %>
