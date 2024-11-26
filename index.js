@@ -11,11 +11,11 @@ const axios = require("axios");
 
 const cookieParser = require("cookie-parser");
 
-app.use("/views", express.static(path.join(__dirname, "views")));
-app.use("/js", express.static(path.join(__dirname, "js")));
+// app.use("/views", express.static(path.join(__dirname, "views")));
+// app.use("/js", express.static(path.join(__dirname, "js")));
 app.set("views", __dirname + "/views");
 app.set("view engine", "ejs");
-app.use(express.static(path.join(__dirname, "public")));
+// app.use(express.static(path.join(__dirname, "public")));
 app.use(express.static(__dirname + "/public"));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
@@ -69,8 +69,6 @@ function checkAdmin(req, res, next) {
   }
 }
 
-
-
 // ██╗  ██╗  ██████╗  ███╗   ███╗ ███████╗         ██╗
 // ██║  ██║ ██╔═══██╗ ████╗ ████║ ██╔════╝        ██╔╝
 // ███████║ ██║   ██║ ██╔████╔██║ █████╗         ██╔╝
@@ -80,11 +78,14 @@ function checkAdmin(req, res, next) {
 
 app.get("/home", (req, res) => {
   if (!req.session.authToken || !req.session.userLevel) {
-    return res.redirect("/login"); 
+    return res.redirect("/login");
   }
   console.log("/home: current session level:", req.session.userLevel);
 
-  res.render("home", { userEmail: req.session.email, userLevel: req.session.userLevel });
+  res.render("home", {
+    userEmail: req.session.email,
+    userLevel: req.session.userLevel,
+  });
 });
 
 app.get("/", (req, res) => {
@@ -93,8 +94,6 @@ app.get("/", (req, res) => {
   }
   res.redirect("/login");
 });
-
-
 
 //   ██████╗  ███████╗  ██████╗  ██╗ ███████╗ ████████╗ ███████╗ ██████╗
 //   ██╔══██╗ ██╔════╝ ██╔════╝  ██║ ██╔════╝ ╚══██╔══╝ ██╔════╝ ██╔══██╗
@@ -113,7 +112,9 @@ app.post("/register", async (req, res) => {
   console.log("password:", password);
 
   if (!email || !password) {
-    return res.render("register", { errorMessage: "Both fields are required." });
+    return res.render("register", {
+      errorMessage: "Both fields are required.",
+    });
   }
 
   try {
@@ -128,7 +129,8 @@ app.post("/register", async (req, res) => {
       }
     );
 
-    const { success, message, userId, jwtToken, identifier } = registerResponse.data;
+    const { success, message, userId, jwtToken, identifier } =
+      registerResponse.data;
 
     if (success) {
       console.log("Registration successful:", message);
@@ -144,7 +146,13 @@ app.post("/register", async (req, res) => {
         }
       );
 
-      const { success: loginSuccess, message: loginMessage, jwtToken: loginToken, userId: loginUserId, identifier: loginIdentifier } = loginResponse.data;
+      const {
+        success: loginSuccess,
+        message: loginMessage,
+        jwtToken: loginToken,
+        userId: loginUserId,
+        identifier: loginIdentifier,
+      } = loginResponse.data;
 
       if (loginSuccess) {
         console.log("Login successful:", loginMessage);
@@ -163,14 +171,24 @@ app.post("/register", async (req, res) => {
           return res.status(401).send({ error: "Invalid user level." });
         }
       } else {
-        return res.render("register", { errorMessage: "Login after registration failed." });
+        return res.render("register", {
+          errorMessage: "Login after registration failed.",
+        });
       }
     } else {
-      return res.render("register", { errorMessage: registerResponse.data.error || "Registration failed." });
+      return res.render("register", {
+        errorMessage: registerResponse.data.error || "Registration failed.",
+      });
     }
   } catch (error) {
-    console.error("Error during registration:", error.response?.data?.error || error.message);
-    return res.render("register", { errorMessage: error.response?.data?.error || "An error occurred. Please try again." });
+    console.error(
+      "Error during registration:",
+      error.response?.data?.error || error.message
+    );
+    return res.render("register", {
+      errorMessage:
+        error.response?.data?.error || "An error occurred. Please try again.",
+    });
   }
 });
 
@@ -241,12 +259,15 @@ app.post("/login", async (req, res) => {
       res.render("login", { errorMessage: "Invalid email or password." });
     }
   } catch (error) {
-    console.error("Error during login:", error.response.data.error, "\n Status code:", error.response.status);
+    console.error(
+      "Error during login:",
+      error.response.data.error,
+      "\n Status code:",
+      error.response.status
+    );
     res.render("login", { errorMessage: error.response.data.error });
   }
 });
-
-
 
 //  █████╗  ██╗     ███████╗ ███╗   ██╗ ██████╗  ██████╗   ██████╗  ██╗ ███╗   ██╗ ████████╗ ███████╗
 // ██╔══██╗ ██║     ██╔════╝ ████╗  ██║ ██╔══██╗ ██╔══██╗ ██╔═══██╗ ██║ ████╗  ██║ ╚══██╔══╝ ██╔════╝
@@ -255,8 +276,9 @@ app.post("/login", async (req, res) => {
 // ██║  ██║ ██║     ███████╗ ██║ ╚████║ ██████╔╝ ██║      ╚██████╔╝ ██║ ██║ ╚████║    ██║    ███████║
 // ╚═╝  ╚═╝ ╚═╝     ╚══════╝ ╚═╝  ╚═══╝ ╚═════╝  ╚═╝       ╚═════╝  ╚═╝ ╚═╝  ╚═══╝    ╚═╝    ╚══════╝
 
-app.get("/ai", (req, res) => {
-  res.sendFile(path.join(__dirname, "views", "ai.html"));
+app.get("/ai", checkAdmin, (req, res) => {
+  // res.sendFile(path.join(__dirname, "views", "ai.html"));
+  res.render("ai");
 });
 
 app.post("/createPage", async (req, res) => {
@@ -433,8 +455,6 @@ app.post("/askBot", async (req, res) => {
   }
 });
 
-
-
 //  █████╗  ██████╗  ███╗   ███╗ ██╗ ███╗   ██╗
 // ██╔══██╗ ██╔══██╗ ████╗ ████║ ██║ ████╗  ██║
 // ███████║ ██║  ██║ ██╔████╔██║ ██║ ██╔██╗ ██║
@@ -452,9 +472,9 @@ app.get("/admin", checkAdmin, async (req, res) => {
 
 /**
  * Helper: calls the server API to get all users' stats. Only admin-level users can access this endpoint.
- * 
- * @param {*} req 
- * @returns response object: 
+ *
+ * @param {*} req
+ * @returns response object:
  * ```
  * {
  *   "userStats": [
@@ -480,14 +500,11 @@ async function callGetAllUsersStats(req) {
     );
     // console.log("callGetAllUsersStats(): response data:", response.data);
     return response.data;
-    
   } catch (error) {
     console.error("callGetAllUsersStats(): Error during fetch:", error);
     return { error: error };
   }
 }
-
-
 
 // ██████╗  ██████╗   ██████╗  ████████╗ ███████╗  ██████╗ ████████╗ ███████╗ ██████╗
 // ██╔══██╗ ██╔══██╗ ██╔═══██╗ ╚══██╔══╝ ██╔════╝ ██╔════╝ ╚══██╔══╝ ██╔════╝ ██╔══██╗
@@ -507,12 +524,11 @@ app.get("/user", async (req, res) => {
     userId: results.user_id,
     email: results.user__email,
     apiCallsRemaining: results.token_count,
-    apiCallsUsed: results.request_count
-};
+    apiCallsUsed: results.request_count,
+  };
 
   res.render("user", { user: user });
 });
-
 
 /**
  * API call to get all users' stats. Only admin-level users can access this endpoint.
@@ -528,11 +544,10 @@ app.get("/getAllUsersStats", checkAdmin, async (req, res) => {
       }
     );
     const results = response.data;
-    const users = results.userStats
+    const users = results.userStats;
     console.log("/getAllUsersStats: users object:", users);
 
     res.send(data);
-
   } catch (error) {
     console.error("Error during fetch:", error);
     return res
@@ -563,13 +578,12 @@ app.get("/getUserStats", async (req, res) => {
   }
 });
 
-
 /**
  * Helper: calls the server API to get the specified user's stats.
- * 
+ *
  * The server will only return the stats of the user making the request, except for admin-level users which can get the stats of any user.
- * 
- * @param {integer} userId 
+ *
+ * @param {integer} userId
  * @param {*} req an Express request object
  * @returns response object:
  * ```
@@ -593,14 +607,11 @@ async function callGetUserStats(userId, req) {
     );
     console.log("callGetUserStats(): response data:", response.data);
     return response.data;
-
   } catch (error) {
     console.error("callGetUserStats(): Error during fetch:", error);
     return { error: error };
   }
 }
-                                     
-
 
 //  ██╗       ██████╗   ██████╗   ██████╗  ██╗   ██╗ ████████╗
 //  ██║      ██╔═══██╗ ██╔════╝  ██╔═══██╗ ██║   ██║ ╚══██╔══╝
@@ -619,8 +630,6 @@ app.post("/logout", (req, res) => {
   });
 });
 
-
-
 //  ██╗  ██╗   ██████╗    ██╗
 //  ██║  ██║  ██╔═████╗  ███║
 //  ███████║  ██║██╔██║  ╚██║
@@ -629,9 +638,9 @@ app.post("/logout", (req, res) => {
 //       ╚═╝   ╚═════╝    ╚═╝
 
 app.get("/401", (req, res) => {
-  res.sendFile(path.join(__dirname, "views", "401.html"));
+  // res.sendFile(path.join(__dirname, "views", "401.html"));
+  res.render("401");
 });
-
 
 // Start the server
 app.listen(port, () => {
