@@ -256,12 +256,9 @@ app.post("/login", async (req, res) => {
 // ╚═╝  ╚═╝ ╚═╝     ╚══════╝ ╚═╝  ╚═══╝ ╚═════╝  ╚═╝       ╚═════╝  ╚═╝ ╚═╝  ╚═══╝    ╚═╝    ╚══════╝
 
 app.get("/ai", (req, res) => {
-  res.sendFile(path.join(__dirname, "views", "ai.html"));
+  // res.sendFile(path.join(__dirname, "views", "ai.html"));
+  res.render("ai", { userLevel: req.session.userLevel });
 });
-
-// app.get("/aitest", (req, res) => {
-//   res.render("ai"); 
-// });
 
 app.post("/createPage", async (req, res) => {
   const { pageName } = req.body;
