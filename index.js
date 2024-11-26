@@ -401,6 +401,76 @@ app.post("/askBot", async (req, res) => {
   }
 });
 
+app.get("/aiEdit", checkLoggedIn, async (req, res) => {
+  try {
+    const response = await axios.get(
+      `https://comp4537-c2p-api-server-1.onrender.com/api/v1/bot/page/`,
+      {
+        headers: {
+          Authorization: `Bearer ${req.session.authToken}`,
+        },
+      }
+    );
+    res.render("aiEdit", { pageNames: response?.data?.pages });
+  } catch (error) {
+    console.error("Error during fetch:", error.response.data.error);
+    return res.render("401"); // change to 404
+    return;
+  }
+});
+
+app.patch("/editPage", async (req, res) => {
+  const { pageName, newPageName, description } = req.body;
+
+  try {
+    const response = await axios.patch(
+      // `https://comp4537-c2p-api-server-1.onrender.com/api/v1/bot/page/`,
+      `http://127.0.0.1:8000/api/v1/bot/page/`,
+      {
+        name: pageName,
+        new_name: newPageName,
+        description: description,
+      },
+      {
+        headers: {
+          "Content-Type": "application/x-www-form-urlencoded",
+          Authorization: `Bearer ${req.session.authToken}`,
+        },
+      }
+    );
+
+    return res.json(response.data);
+  } catch (error) {
+    console.error("Error during fetch:", error.response.data.error);
+    return res.status(500).send({ error: error.response.data.error });
+  }
+});
+
+app.delete("/deletePage", async (req, res) => {
+  const { pageName } = req.body;
+
+  try {
+    const response = await axios.delete(
+      // `https://comp4537-c2p-api-server-1.onrender.com/api/v1/bot/page/`,
+      `http://127.0.0.1:8000/api/v1/bot/page/`,
+      {
+        headers: {
+          "Content-Type": "application/x-www-form-urlencoded",
+          Authorization: `Bearer ${req.session.authToken}`,
+        },
+        data: {
+          name: pageName,
+        },
+      }
+    );
+
+    return res.json(response.data);
+  } catch (error) {
+    console.error("Error during fetch:", error.response.data.error);
+    return res.status(500).send({ error: error.response.data.error });
+  }
+});
+
 //  █████╗  ██████╗  ███╗   ███╗ ██╗ ███╗   ██╗
 // ██╔══██╗ ██╔══██╗ ████╗ ████║ ██║ ████╗  ██║
 // ███████║ ██║  ██║ ██╔████╔██║ ██║ ██╔██╗ ██║

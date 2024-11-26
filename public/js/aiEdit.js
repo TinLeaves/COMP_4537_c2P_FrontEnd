@@ -19,7 +19,7 @@ const getContext = async (pageName) => {
         Authorization: `Bearer ${token}`,
         "Content-Type": "application/json",
       },
-      method: "GET",
+      method: "PATCH",
     });
 
     const data = await response.json();
@@ -71,36 +71,75 @@ const askBot = async () => {
   }
 };
 
-const createPage = async () => {
-  const createPageResult = document.getElementById("createPageResult");
-  const pageName = document.getElementById("createPagePageName").value;
-  const description = document.getElementById("createPageDescription").value;
+const editPage = async () => {
+  const editPageResult = document.getElementById("editPageResult");
+  const pageName = document.getElementById("editPagePageOriName").value;
+  const newPageName = document.getElementById("editPagePageName").value;
+  const description = document.getElementById("editPageDescription").value;
 
   try {
     const response = await fetch(
-      `https://comp4537c2pfrontend-production.up.railway.app/createPage`,
-      // `http://localhost:3000/createPage`,
+      // `https://comp4537c2pfrontend-production.up.railway.app/editPage`,
+      `http://localhost:3000/editPage`,
       {
         headers: {
           "Content-Type": "application/json",
         },
-        method: "POST",
-        body: JSON.stringify({ pageName: pageName, description: description }),
+        method: "PATCH",
+        body: JSON.stringify({
+          pageName: pageName,
+          newPageName: newPageName,
+          description: description,
+        }),
       }
     );
 
     const data = await response.json();
 
     if (data) {
-      createPageResult.innerHTML = data.success;
-      createPageResult.style.color = "green";
+      editPageResult.innerHTML = data.success;
+      editPageResult.style.color = "green";
     } else {
-      createPageResult.innerHTML = data.error;
-      createPageResult.style.color = "red";
+      editPageResult.innerHTML = data.error;
+      editPageResult.style.color = "red";
     }
   } catch (error) {
-    createPageResult.innerHTML = error.error;
-    createPageResult.style.color = "red";
+    editPageResult.innerHTML = error.error;
+    editPageResult.style.color = "red";
+  }
+};
+
+const deletePage = async () => {
+  const editPageResult = document.getElementById("editPageResult");
+  const pageName = document.getElementById("editPagePageOriName").value;
+
+  try {
+    const response = await fetch(
+      // `https://comp4537c2pfrontend-production.up.railway.app/editPage`,
+      `http://localhost:3000/deletePage`,
+      {
+        headers: {
+          "Content-Type": "application/json",
+        },
+        method: "DELETE",
+        body: JSON.stringify({
+          pageName: pageName,
+        }),
+      }
+    );
+
+    const data = await response.json();
+
+    if (data) {
+      editPageResult.innerHTML = data.success;
+      editPageResult.style.color = "green";
+    } else {
+      editPageResult.innerHTML = data.error;
+      editPageResult.style.color = "red";
+    }
+  } catch (error) {
+    editPageResult.innerHTML = error.error;
+    editPageResult.style.color = "red";
   }
 };
 
@@ -137,30 +176,30 @@ const createContext = async () => {
   }
 };
 
-const deletePage = async (pageName) => {
-  try {
-    const token = localStorage.getItem("jwtToken");
-    const response = await fetch(BOT_ROUTES.QUERY_PAGE(pageName), {
-      headers: {
-        Authorization: `Bearer ${token}`,
-        "Content-Type": "application/json",
-      },
-      method: "DELETE",
-    });
+// const deletePage = async (pageName) => {
+//   try {
+//     const token = localStorage.getItem("jwtToken");
+//     const response = await fetch(BOT_ROUTES.QUERY_PAGE(pageName), {
+//       headers: {
+//         Authorization: `Bearer ${token}`,
+//         "Content-Type": "application/json",
+//       },
+//       method: "DELETE",
+//     });
 
-    const data = await response.json();
+//     const data = await response.json();
 
-    if (response.status === 200) {
-      if (data.success) {
-        return data.success;
-      }
-    } else {
-      throw new Error(data.error);
-    }
-  } catch (error) {
-    throw new PageError(error);
-  }
-};
+//     if (response.status === 200) {
+//       if (data.success) {
+//         return data.success;
+//       }
+//     } else {
+//       throw new Error(data.error);
+//     }
+//   } catch (error) {
+//     throw new PageError(error);
+//   }
+// };
 
 const deleteContext = async (pageName, contextId) => {
   try {
@@ -262,16 +301,20 @@ const patchContext = async (pageName, contextId, text) => {
   }
 };
 
+const editAiPageOnSelect = (name) => {
+  const editPagePageName = document.getElementById("editPagePageName");
+  const editPageDescription = document.getElementById("editPageDescription");
+  editPagePageName.value = pageNames.find((page) => page.name === name).name;
+  editPageDescription.value = pageNames.find((page) => page.name === name).desc;
+};
+
 const loadPageNames = () => {
-  const createContextPageName = document.getElementById(
-    "createContextPageName"
-  );
-  const askQuestionPageName = document.getElementById("askQuestionPageName");
+  console.log(pageNames);
+  const editPagePageOriName = document.getElementById("editPagePageOriName");
   const pageSelections = pageNames.map((pageName) => {
     return `<option value="${pageName.name}">${pageName.name}</option>`;
   });
-  createContextPageName.innerHTML = pageSelections;
-  askQuestionPageName.innerHTML = pageSelections;
+  editPagePageOriName.innerHTML = pageSelections;
 };
 
 document.addEventListener("DOMContentLoaded", () => {
