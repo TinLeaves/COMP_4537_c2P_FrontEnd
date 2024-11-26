@@ -329,13 +329,14 @@ app.get("/ai", checkLoggedIn, async (req, res) => {
 });
 
 app.post("/createPage", async (req, res) => {
-  const { pageName } = req.body;
+  const { pageName, description } = req.body;
 
   try {
     const response = await axios.post(
-      `https://comp4537-c2p-api-server-1.onrender.com/api/v1/bot/${req.session.userId}/page/`,
+      `https://comp4537-c2p-api-server-1.onrender.com/api/v1/bot/page/`,
       {
         name: pageName,
+        description: description,
       },
       {
         headers: {
@@ -345,7 +346,7 @@ app.post("/createPage", async (req, res) => {
       }
     );
 
-    return res.redirect("/ai");
+    return res.json(response.data);
   } catch (error) {
     console.error("Error during fetch:", error.response.data.error);
     return res.status(500).send({ error: error.response.data.error });

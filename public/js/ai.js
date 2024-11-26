@@ -121,29 +121,33 @@ const askBot = async (pageName, question) => {
   }
 };
 
-const createPage = async (pageName, description) => {
+const createPage = async () => {
+  const createPageResult = document.getElementById("createPageResult");
+  const pageName = document.getElementById("createPagePageName").value;
+  const description = document.getElementById("createPageDescription").value;
+
   try {
-    const token = localStorage.getItem("jwtToken");
-    const response = await fetch(BOT_ROUTES.PAGES(), {
+    const response = await fetch(`http://localhost:3000/createPage`, {
       headers: {
-        Authorization: `Bearer ${token}`,
         "Content-Type": "application/json",
       },
       method: "POST",
-      body: JSON.stringify({ name: pageName, description: description }),
+      body: JSON.stringify({ pageName: pageName, description: description }),
     });
 
     const data = await response.json();
+    console.log("data: ", data.success);
 
-    if (response.status === 201) {
-      if (data.success) {
-        return data.success;
-      }
+    if (data) {
+      createPageResult.innerHTML = data.success;
+      createPageResult.style.color = "green";
     } else {
-      throw new Error(data.error);
+      createPageResult.innerHTML = data.error;
+      createPageResult.style.color = "red";
     }
   } catch (error) {
-    throw new PageError(error);
+    createPageResult.innerHTML = error.error;
+    createPageResult.style.color = "red";
   }
 };
 

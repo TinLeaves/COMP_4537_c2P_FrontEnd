@@ -13,21 +13,34 @@
       <p>Welcome to the AI page</p>
       <main>
         <h3>Create a Page</h3>
-        <form action="/createPage" method="POST">
-          <label for="createContextPageName"
+        <form>
+          <label for="createPagePageName"
             >Enter the page name for your context collection?</label
           >
           <br />
           <input
+            id="createPagePageName"
             type="text"
-            name="pageName"
+            name="createPagePageName"
             placeholder="Enter the Page name"
             required
           />
+          <br />
+          <label for createPageDescription>
+            Enter the description for your page:
+          </label>
+          <br />
+          <input
+            id="createPageDescription"
+            type="text"
+            name="createPageDescription"
+            placeholder="Enter the description if available"
+          />
 
           <br />
-          <button type="submit">Create</button>
+          <button type="button" onclick="createPage()">Create</button>
         </form>
+        <div id="createPageResult"></div>
 
         <h3>Upload context to a page</h3>
         <form action="/createContext" method="POST">
@@ -90,6 +103,6 @@
     <script>
       const pageNames = <%- JSON.stringify(pageNames) %>
     </script>
-    <script src="../js/ai.js"></script>
+    <script src="../js//ai.js"></script>
   </body>
 </html>
