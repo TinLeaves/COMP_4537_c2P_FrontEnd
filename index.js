@@ -52,7 +52,7 @@ app.use(
     resave: true,
     saveUninitialized: false,
     cookie: {
-      secure: isProduction,
+      secure: isProduction === "true",
       maxAge: 60 * 60 * 1000,
     },
   })
